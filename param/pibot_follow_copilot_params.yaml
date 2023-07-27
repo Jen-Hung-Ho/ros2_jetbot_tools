@@ -1,0 +1,18 @@
+follow_copilot:
+  ros__parameters:
+    laser_topic: "/GoPiGo3/scan"
+    cmd_vel_topic: "/GoPiGo3/cmd_vel"
+    subscribe topic: "/detectnet/detectnet"
+    class_labels: "class_labels_3185375291238328062"
+    sub_topic: "/detectnet/overlay"
+    speed: 0.1
+    speed_up: 0.07
+    turn: 0.6 
+    stop_distance: 0.50
+    fov: 62.0
+    score: 0.50
+    stop_count: 15
+    follow_detect: true
+    tracking_objects: ['person','dog']
+    qos_reliability: true
+    debug: true

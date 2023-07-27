@@ -1,0 +1,17 @@
+follow_copilot:
+  ros__parameters:
+    laser_topic: "/jetbot1/scan"
+    cmd_vel_topic: "/jetbot1/cmd_vel"
+    node_name: "/detectnet/detectnet"
+    class_labels: "class_labels_3185375291238328062"
+    sub_topic: "/detectnet/overlay"
+    speed: 0.1
+    speed_up: 0.15
+    turn: 0.6 
+    stop_distance: 0.50
+    fov: 90.0
+    score: 0.50
+    stop_count: 15
+    follow_detect: true
+    tracking_objects: ['person','dog']
+    debug: true

@@ -1,0 +1,15 @@
+detect_copilot:
+  ros__parameters:
+    cmd_vel_topic: "/jetbot1/cmd_vel"
+    node name: "/detectnet/detectnet"
+    class_labels: "class_labels_10909380423933757363"
+    overlay_topic: "/detectnet/overlay"
+    detect_topic: "/detectnet/detections"
+    speed: 0.15
+    turn: 0.1 
+    size: 28000
+    score: 0.70
+    stop_count: 15
+    follow_detect: true
+    tracking_objects: ['kendama', 'yoyo']
+    debug: true
