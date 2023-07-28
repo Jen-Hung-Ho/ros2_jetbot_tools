@@ -1,0 +1,11 @@
+laser_avoidance:
+  ros__parameters:
+    qos_reliability: true
+    laser_topic: "/GoPiGo3/scan"
+    cmd_vel_topic: "/GoPiGo3/cmd_vel"
+    base_frame: "GoPiGo3/base_footprint"
+    angle: 30
+    linear: 0.1
+    angular: 0.2
+    stop_distance: 0.50
+    start: false

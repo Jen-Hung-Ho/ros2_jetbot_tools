@@ -48,17 +48,19 @@ class LaserCopilot(Node):
             if param.name == 'start' and param.type_ == Parameter.Type.BOOL:
                 self.start = param.value
                 self.get_logger().info('start= {}'.format(bool(param.value)))
-            elif param.name == 'dist' and param.type_ == Parameter.Type.DOUBLE:
+            elif param.name == 'stop_distance' and param.type_ == Parameter.Type.DOUBLE:
                 self.get_logger().info('stop distance= {}'.format(str(param.value)))
-                self.Dist = param.value
-                self.get_logger().info('distance: {}'.format(self.Dist))
+                self.stop_distance = param.value
+                self.get_logger().info('distance: {}'.format(self.stop_distance))
         return SetParametersResult(successful=True)
 
     def __init__(self):
         super().__init__('laser_avoidance')
 
+        self.cmd_vel_topic = self.declare_parameter('cmd_vel_topic', '/cmd_vel').get_parameter_value().string_value
+        self.QosReliability = self.declare_parameter('qos_reliability', False).get_parameter_value().bool_value
         self.laser_topic = self.declare_parameter('laser_topic', '/scan').get_parameter_value().string_value
-        self.Dist = self.declare_parameter('dist', 0.5).get_parameter_value().double_value
+        self.stop_distance = self.declare_parameter('stop_distance', 0.5).get_parameter_value().double_value
         self.Angle = self.declare_parameter('angle', 30).get_parameter_value().integer_value
         self.fine_tune = self.declare_parameter('fine_tune', True).get_parameter_value().bool_value
         self.linear = self.declare_parameter('linear', 0.1).get_parameter_value().double_value
@@ -73,15 +75,17 @@ class LaserCopilot(Node):
             'odom_frame', 'odom').get_parameter_value().string_value
     
         # Twist -  linear, angular
-        self.get_logger().info('laser_topic: {}'.format(self.laser_topic))
-        self.get_logger().info('distance : {}'.format(self.Dist))
-        self.get_logger().info('angle    : {}'.format(self.Angle))
-        self.get_logger().info('fine_tune: {}'.format(self.fine_tune))
-        self.get_logger().info('linear   : {}'.format(self.linear))
-        self.get_logger().info('angular  : {}'.format(self.angular))
-        self.get_logger().info('base_frame:{}'.format(self.base_frame))
-        self.get_logger().info('odom_frame:{}'.format(self.odom_frame))
-        self.get_logger().info('start    : {}'.format(self.start))
+        self.get_logger().info('cmd_vel_topic : {}'.format(self.cmd_vel_topic))
+        self.get_logger().info('laser_topic   : {}'.format(self.laser_topic))
+        self.get_logger().info('stop distance : {}'.format(self.stop_distance))
+        self.get_logger().info('angle         : {}'.format(self.Angle))
+        self.get_logger().info('fine_tune     : {}'.format(self.fine_tune))
+        self.get_logger().info('linear        : {}'.format(self.linear))
+        self.get_logger().info('angular       : {}'.format(self.angular))
+        self.get_logger().info('base_frame    : {}'.format(self.base_frame))
+        self.get_logger().info('odom_frame    : {}'.format(self.odom_frame))
+        self.get_logger().info('QOS reliability:{}'.format(self.QosReliability))
+        self.get_logger().info('start         : {}'.format(self.start))
 
         self.mutex = threading.Lock()
         self.warning = [0, 0, 0] #(left,middle,right)
@@ -100,8 +104,10 @@ class LaserCopilot(Node):
         self.add_on_set_parameters_callback(self.parameter_callback)
 
         qos_profile = QoSProfile(depth=10)
-        # qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
-        qos_profile.reliability = QoSReliabilityPolicy.RELIABLE
+        if self.QosReliability:
+            qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
+        else:
+            qos_profile.reliability = QoSReliabilityPolicy.RELIABLE
         qos_profile.durability = QoSDurabilityPolicy.VOLATILE
 
         # Initialize the tf2 listener
@@ -117,7 +123,7 @@ class LaserCopilot(Node):
             qos_profile)
         
         self.pub_twist = self.create_publisher(
-            Twist, "/cmd_vel", 20)
+            Twist, self.cmd_vel_topic, 20)
         
         self.create_timer(0.1, self.timer_callback)
 
@@ -196,7 +202,7 @@ class LaserCopilot(Node):
             # Find the front obstacle distance
             (distance, angle, index) = self.lidarlib.front_lidar_distance(lidar_samples)
             
-            if distance < self.Dist + 1.2:
+            if distance < self.stop_distance + 1.2:
                 # str_lidar_info = '%.2f:%.2f' %(distance, angle)
                 self.get_logger().info('Front:[d:a]:{:.2f}:{:.2f}'.format(distance, angle))
                 self.get_logger().debug('lidar_data:{}'.format(lidar_samples))
@@ -216,12 +222,12 @@ class LaserCopilot(Node):
                 (a_distance[2], a_angle[2]) = lidar_samples[index+1]
 
                 
-                if ((a_distance[0] <= a_distance[2]) and (a_distance[0] <= (self.Dist + 0.05))):
+                if ((a_distance[0] <= a_distance[2]) and (a_distance[0] <= (self.stop_distance + 0.05))):
                     # right
                     fine_tune_angle = 0.15
                     fine_tune_closeup_area = 2
                     str_lidar_info = 'Closeup area -> RIGHT -- [d:a]:%.2f:%.2f' %(a_distance[0], a_angle[0])
-                elif ((a_distance[2] <= a_distance[0]) and (a_distance[2] <= (self.Dist + 0.05))):
+                elif ((a_distance[2] <= a_distance[0]) and (a_distance[2] <= (self.stop_distance + 0.05))):
                     # left
                     fine_tune_angle = -0.15
                     fine_tune_closeup_area = 2
@@ -255,7 +261,7 @@ class LaserCopilot(Node):
                  self.get_logger().debug('numpy smple block front:[d,a]:{}:{} array:{}'.format(distance, angle, lidar_samples))
                 
             # Front find obstacle - turn the robot
-            if distance < self.Dist:
+            if distance < self.stop_distance:
                 # First stop the robot
                 self.twist.linear.x = 0.0
                 self.twist.angular.z = 0.0
@@ -267,13 +273,13 @@ class LaserCopilot(Node):
                 # -90-90 Find the front possible direction to rotate
                 # (distance, angle) = self.lidarlib.max_lidar_distance(lidar_samples, -90.0, 90.0)
                 (distance, angle) = self.lidarlib.max_lidar_distance(lidar_samples, 90.0, 270.0)
-                if distance < self.Dist:
+                if distance < self.stop_distance:
                     self.get_logger().info('Look around 360 rotate degree  ---------------')
                     # Find all the possible direction to rotate
                     # (distance, angle) = self.lidarlib.max_lidar_distance(lidar_samples, -180.0, 180.0)
                     (distance, angle) = self.lidarlib.max_lidar_distance(lidar_samples, 0.0, 360.0)
 
-                if distance > self.Dist:
+                if distance > self.stop_distance:
                     self.turn_status = self.turn_status._replace(done=False)
                     self.turn_status = self.turn_status._replace(turn_angle=angle)
                     self.turn_status = self.turn_status._replace(distance=distance)
