@@ -6,7 +6,7 @@ detect_copilot:
     overlay_topic: "/detectnet/overlay"
     detect_topic: "/detectnet/detections"
     speed: 0.1
-    turn: 0.1 
+    turn: 0.6
     size: 28000
     score: 0.70
     stop_count: 8

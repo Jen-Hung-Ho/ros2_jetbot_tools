@@ -46,7 +46,7 @@ class DetectCopilot(Node):
         self.overlay_topic = self.declare_parameter('overlay_topic','/detectnet/overlay').get_parameter_value().string_value
         self.detect_topic = self.declare_parameter('detect_toipc', '/detectnet/detections').get_parameter_value().string_value
         self.speed_gain = self.declare_parameter('speed', 0.1).get_parameter_value().double_value
-        self.turn_gain = self.declare_parameter('turn', 0.1).get_parameter_value().double_value
+        self.turn_gain = self.declare_parameter('turn', 0.6).get_parameter_value().double_value
         self.stop_size = self.declare_parameter('size', 28000).get_parameter_value().integer_value
         self.score = self.declare_parameter('score', 0.8).get_parameter_value().double_value
         self.stop_count = self.declare_parameter('stop_count', 7).get_parameter_value().integer_value
@@ -220,7 +220,7 @@ class DetectCopilot(Node):
         
         # delta_x = detection.bbox.center.x - self.center_x
         # turn = -1.0 * (delta_x / self.center_x)
-        turn = self.saturate(turn, -1.5, 1.5) * 0.6
+        turn = self.saturate(turn, -1.5, 1.5) * self.turn_gain
 
         s_x = detection.bbox.size_x
         s_y = detection.bbox.size_y

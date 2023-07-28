@@ -73,7 +73,6 @@ class FollowDetectCopilot(Node):
 
         # Lidar parameters
         self.laser_topic = self.declare_parameter('laser_topic', '/scan').get_parameter_value().string_value
-        self.Dist = self.declare_parameter('dist', 0.5).get_parameter_value().double_value
         self.Angle = self.declare_parameter('angle', 30).get_parameter_value().integer_value
         self.fine_tune = self.declare_parameter('fine_tune', True).get_parameter_value().bool_value
         self.linear = self.declare_parameter('linear', 0.1).get_parameter_value().double_value
@@ -106,7 +105,6 @@ class FollowDetectCopilot(Node):
 
         self.get_logger().info('cmd_vel_topic: {}'.format(self.cmd_vel_topic))
         self.get_logger().info('laser_topic: {}'.format(self.laser_topic))
-        self.get_logger().info('distance : {}'.format(self.Dist))
         self.get_logger().info('angle    : {}'.format(self.Angle))
         self.get_logger().info('fine_tune: {}'.format(self.fine_tune))
         self.get_logger().info('linear   : {}'.format(self.linear))
