@@ -78,7 +78,7 @@ class FollowDetectCopilot(Node):
         self.linear = self.declare_parameter('linear', 0.1).get_parameter_value().double_value
         self.angular = self.declare_parameter('angular', 0.2).get_parameter_value().double_value
         self.QosReliability = self.declare_parameter('qos_reliability', False).get_parameter_value().bool_value
-        self.start = self.declare_parameter('start', False).get_parameter_value().bool_value
+
 
         # Declare and acuqire 'target_frame' parameter
         self.base_frame = self.declare_parameter(
@@ -112,7 +112,7 @@ class FollowDetectCopilot(Node):
         self.get_logger().info('base_frame:{}'.format(self.base_frame))
         self.get_logger().info('odom_frame:{}'.format(self.odom_frame))
         self.get_logger().info('QOS reliability:{}'.format(self.QosReliability))
-        self.get_logger().info('start    : {}'.format(self.start))
+
 
         self.mutex = threading.Lock()
         self.class_label_names = []

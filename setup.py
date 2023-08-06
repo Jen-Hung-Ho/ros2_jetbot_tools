@@ -34,7 +34,7 @@ setup(
         'detect_copilot = jetbot_tools.script.detect_copilot:main',
         'follow_copilot = jetbot_tools.script.follow_copilot:main',
         'laser_avoidance = jetbot_tools.script.laser_avoidance:main',
-        'tf_follow = jetbot_tools.script.tf2_listener_copilot:main',
+        'tf2_follow = jetbot_tools.script.tf2_listener_copilot:main',
         'calibrate_angular = jetbot_tools.script.calibrate_angular:main',
         'calibrate_linear = jetbot_tools.script.calibrate_linear:main'
         ],

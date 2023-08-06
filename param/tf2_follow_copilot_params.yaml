@@ -1,0 +1,10 @@
+tf2_follow:
+  ros__parameters:
+    from_frame: "jetbot1/base_footprint"
+    to_frame: "GoPiGo3/base_footprint"
+    speed: 0.5
+    tolerance: 0.01
+    scale_rotation_rate: 1.0
+    cross_ns: true
+    global_ns: true
+    start_follow: false
