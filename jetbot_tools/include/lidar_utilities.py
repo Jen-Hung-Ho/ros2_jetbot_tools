@@ -15,8 +15,10 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
+#
+# This class provides simple lidar functionalities to a ROS robot 
+#
 class LidarTools():
-    ''' This class provides simple lidar functionalities to a ROS robot '''
 
     def __init__(self, logger):
 
@@ -27,7 +29,7 @@ class LidarTools():
         self.Angle = 30
 
         logger.info('LidarTools() initialize : collect lidar sample at [{}] degrees'.format(self.Angle))
-        
+
 
     #
     # Filter out sonar range data
@@ -78,8 +80,9 @@ class LidarTools():
     # Get robot angle from TF2 transform
     #
     def get_odom_angle(self, tf_buffer, odom_frame, base_frame):
-        # Get the current transform between the odom and base                                                frames
+
         try:
+            # Get the current transform from the odom to base frames
             t = tf_buffer.lookup_transform(
                 odom_frame, 
                 base_frame, 

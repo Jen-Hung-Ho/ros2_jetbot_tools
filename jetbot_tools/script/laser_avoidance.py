@@ -103,10 +103,10 @@ class LaserCopilot(Node):
             self.tf_listener = TransformListener(self.tf_buffer, self)
         else:
             namespace = get_tf2_namespace(self.base_frame)
-            self.get_logger().info('NamesapceTransformLintenter:({})'.format(namespace))
+            self.get_logger().info('NamespaceTransformListener:({})'.format(namespace))
             # Default disable broacast to /tf and /tf_static
             self.global_ns = False
-            self.tf_listener = NamespaceTransformLintener(namespace, self.tf_buffer, self)
+            self.tf_listener = NamespaceTransformListener(namespace, self.tf_buffer, self)
 
         qos_profile = QoSProfile(depth=10)
         if self.QosReliability:

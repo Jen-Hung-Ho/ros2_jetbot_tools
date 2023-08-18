@@ -28,40 +28,8 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros import TransformBroadcaster
 from tf2_msgs.msg import TFMessage
-#from threading import Thread
 
-class NamespaceTransforLintener(TransformListener):
-    def __init__(self, namespace, buffer, node, *, spin_thread=False, qos=None, static_qos=None):
-        super().__init__(buffer, node)
-        self._node = node
-
-        # Unsubscribe to /tf /tf_statics
-        super().unregister()
-
-        if qos is None:
-            qos = QoSProfile(
-                depth=100,
-                durability= DurabilityPolicy.VOLATILE,
-                history=HistoryPolicy.KEEP_LAST,
-            )
-
-        if self._node.global_ns:
-            self.tf_broacast = TransformBroadcaster(self._node)
-
-        # self.group = super().group
-        self.group = ReentrantCallbackGroup()
-        self._subscription = self._node.create_subscription(
-            TFMessage, f'{namespace}/tf', self._tf_callback,
-            qos, callback_group=self.group)
-    
-    def _tf_callback(self, data):
-        # pipe Transform message from namespace/tf to tf2 buffer
-        # tf_buffer.lookup_transform() cable to lookup transform cross namespace
-        super().callback(data)
-
-        # broadcast Transform message to global /tf topic
-        if self._node.global_ns:
-            self.tf_broacast.sendTransform(data.transforms)
+from ..include.tf2_utilities import *
 
 
 
@@ -107,11 +75,11 @@ class CalibrateLinear(Node):
         # Declare and acuqire 'target_frame' parameter
         self.from_frame = self.declare_parameter(
             'from_frame', 'jetbot1/base_footprint').get_parameter_value().string_value
-        self.from_namespace = self.get_tf2_namespace(self.from_frame)
+        self.from_namespace = get_tf2_namespace(self.from_frame)
 
         self.to_frame = self.declare_parameter(
             'to_frame', 'GoPiGo3/base_footprint').get_parameter_value().string_value
-        self.to_namespace = self.get_tf2_namespace(self.to_frame)
+        self.to_namespace = get_tf2_namespace(self.to_frame)
 
         # Add parameters callback 
         self.add_on_set_parameters_callback(self.parameter_callback)
@@ -138,32 +106,23 @@ class CalibrateLinear(Node):
             self.tf_listener = TransformListener(self.tf_buffer, self)
         else:
             # Lookup /tf from 2 different namespace
-            self.tf_listener_from = NamespaceTransforLintener(self.from_namespace, self.tf_buffer, self)
-            self.tf_listener_to   = NamespaceTransforLintener(self.to_namespace, self.tf_buffer, self)
+            self.tf_listener_from = NamespaceTransformListener(self.from_namespace, self.tf_buffer, self)
+            self.tf_listener_to   = NamespaceTransformListener(self.to_namespace, self.tf_buffer, self)
 
         self.thread = threading.Thread(target=self.thread_callback)
         self.thread.start()
 
-    #
-    # Get tf2 namespace  
-    #
-    def get_tf2_namespace(self, s):
-        # Ex: 'jetbot1/base_footprint'
-        namespace = s.split('/')[0]
-        self.get_logger().info('get tf2 namespace: {}'.format(namespace))
-
-        return namespace
 
     def thread_callback(self):
         self.get_logger().info('Thread callback : {}'.format("TF2 listener") )
-    
+
         # Get the starting position from the tf2 transform between the 2 robots base_link frames
         self.position = self.get_position()
         # self.get_logger().info("Init TF move=[{:.2f} : {:.2f} : {:.2f}]".format(self.position.x, self.position.y, self.position.z))
 
         rate = self.create_rate(self.rate)
         while rclpy.utilities.ok():
-            
+
             # Stop the robot by default
             move_cmd = Twist()
 
@@ -198,7 +157,6 @@ class CalibrateLinear(Node):
 
             # self.cmd_vel.publish(move_cmd)
             rate.sleep()
-            # time.sleep(0.2)
 
 
     def get_position(self):
@@ -220,8 +178,8 @@ class CalibrateLinear(Node):
         p.y = t.transform.translation.y
         p.z = t.transform.translation.z
         return p
-    
-    
+
+
 
 
 def main(args=None):

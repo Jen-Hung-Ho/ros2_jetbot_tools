@@ -9,7 +9,10 @@ from rclpy.qos import HistoryPolicy
 from rclpy.qos import QoSProfile
 from tf2_msgs.msg import TFMessage
 
-class NamespaceTransformLintener(TransformListener):
+#
+# Transformlistener support namepace /tf /tf_static
+#
+class NamespaceTransformListener(TransformListener):
     def __init__(self, namespace, buffer, node, *, spin_thread=False, qos=None, static_qos=None):
         super().__init__(buffer, node, spin_thread=spin_thread)
         self._node = node
