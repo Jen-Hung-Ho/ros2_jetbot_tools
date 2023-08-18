@@ -9,3 +9,4 @@ laser_avoidance:
     angular: 0.2
     stop_distance: 0.50
     start: false
+    use_namespace: true

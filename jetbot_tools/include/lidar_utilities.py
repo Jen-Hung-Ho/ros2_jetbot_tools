@@ -11,6 +11,7 @@ from math import radians, copysign, pi, degrees
 import PyKDL
 
 from sklearn.cluster import KMeans
+from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
@@ -63,7 +64,6 @@ class LidarTools():
             min_value = np.average(largest_cluster_values)
             self.logger.debug('K-- angle:{} min:{} len:{} raw:{}'.format(angle, min_value, len(data), data))
 
-
         except ValueError as e:
             self.logger.info('get sonar data error:{}'.format(e))
             self.logger.info('data:{}'.format(data))
@@ -71,28 +71,27 @@ class LidarTools():
             if min_value == max_value:
                 str_angle = '%.2f' % angle
                 self.logger.debug('K--- lidar angle:{} min:{} data:{} '.format(str_angle, min_value, data))
-                
 
         return min_value
-    
+
     #
     # Get robot angle from TF2 transform
     #
     def get_odom_angle(self, tf_buffer, odom_frame, base_frame):
-        # Get the current transform between the odom and base frames
+        # Get the current transform between the odom and base                                                frames
         try:
             t = tf_buffer.lookup_transform(
                 odom_frame, 
                 base_frame, 
                 rclpy.time.Time())
             self.logger.debug('{}'.format(t.transform.rotation))
-        except:
-            self.logger.info('TF2 transform exception')
+        except TransformException as ex:
+            # self.logger.info('TF2 transform exception')
+            self.logger.info(f'TF2 transform exception {self.base_frame} to {self.odam_frame}: {ex}')
             return 0.0
-        LaserScan
+
         # Convert the rotation from a quaternion to an Euler angle
         return self.quat_to_angle(t.transform.rotation)
-
 
     def quat_to_angle(self, quat):
         rot = PyKDL.Rotation.Quaternion(quat.x, quat.y, quat.z, quat.w)
@@ -104,9 +103,10 @@ class LidarTools():
         while res > pi:
             res -= 2.0 * pi
         # < -180 -> + 360
-        while res < -pi:LaserScan
+        while res < -pi:
+            res += 2.0 * pi
         return res
-    
+
     #
     # Deep copy LaserScan Data
     #
@@ -188,7 +188,7 @@ class LidarTools():
 
         if debug:
             with np.printoptions(precision=3, suppress=True):
-                self.logger.info('smple min-max:[{}]-[{}] max-row:{} raw-data:{}'.format(min_angle, max_angle, max_row, filter_180))
+                self.logger.info('sample min-max:[{}]-[{}] max-row:{} raw-data:{}'.format(min_angle, max_angle, max_row, filter_180))
 
 
         return max_row

@@ -9,10 +9,6 @@ import rclpy
 import numpy as np
 import threading
 import time
-import os
-import sys
-import random
-import warnings
 
 from rclpy.node import Node
 from rclpy.qos import QoSDurabilityPolicy, QoSHistoryPolicy, QoSReliabilityPolicy
@@ -20,21 +16,17 @@ from rclpy.qos import QoSProfile
 from rclpy.parameter import Parameter
 from collections import namedtuple
 from rcl_interfaces.msg import ParameterType, SetParametersResult
-from ros2param.api import call_get_parameters
 from sensor_msgs.msg import LaserScan
 from std_msgs.msg import String
-from geometry_msgs.msg import Point
 from geometry_msgs.msg import Twist
 
-# from sklearn.cluster import KMeans
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
-
 from math import radians, copysign, pi, degrees
-import PyKDL
 
 from ..include.lidar_utilities import LidarTools
+from ..include.tf2_utilities import *
 
 # logging format
 # os.environ['RCUTILS_LOG_TIME_EXPERIMENTAL'] = '1'
@@ -66,14 +58,15 @@ class LaserCopilot(Node):
         self.linear = self.declare_parameter('linear', 0.1).get_parameter_value().double_value
         self.angular = self.declare_parameter('angular', 0.2).get_parameter_value().double_value
         self.start = self.declare_parameter('start', False).get_parameter_value().bool_value
+        self.use_namespace = self.declare_parameter('use_namespace', True).get_parameter_value().bool_value
 
         # Declare and acuqire 'target_frame' parameter
         self.base_frame = self.declare_parameter(
             'base_frame', 'base_footprint').get_parameter_value().string_value
-        
+
         self.odom_frame = self.declare_parameter(
             'odom_frame', 'odom').get_parameter_value().string_value
-    
+
         # Twist -  linear, angular
         self.get_logger().info('cmd_vel_topic : {}'.format(self.cmd_vel_topic))
         self.get_logger().info('laser_topic   : {}'.format(self.laser_topic))
@@ -82,6 +75,7 @@ class LaserCopilot(Node):
         self.get_logger().info('fine_tune     : {}'.format(self.fine_tune))
         self.get_logger().info('linear        : {}'.format(self.linear))
         self.get_logger().info('angular       : {}'.format(self.angular))
+        self.get_logger().info('use_namespace : {}'.format(self.use_namespace))
         self.get_logger().info('base_frame    : {}'.format(self.base_frame))
         self.get_logger().info('odom_frame    : {}'.format(self.odom_frame))
         self.get_logger().info('QOS reliability:{}'.format(self.QosReliability))
@@ -103,6 +97,17 @@ class LaserCopilot(Node):
         # Add parameters callback 
         self.add_on_set_parameters_callback(self.parameter_callback)
 
+        # Initialize the tf2 listener
+        self.tf_buffer = Buffer()
+        if not self.use_namespace:
+            self.tf_listener = TransformListener(self.tf_buffer, self)
+        else:
+            namespace = get_tf2_namespace(self.base_frame)
+            self.get_logger().info('NamesapceTransformLintenter:({})'.format(namespace))
+            # Default disable broacast to /tf and /tf_static
+            self.global_ns = False
+            self.tf_listener = NamespaceTransformLintener(namespace, self.tf_buffer, self)
+
         qos_profile = QoSProfile(depth=10)
         if self.QosReliability:
             qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
@@ -110,61 +115,22 @@ class LaserCopilot(Node):
             qos_profile.reliability = QoSReliabilityPolicy.RELIABLE
         qos_profile.durability = QoSDurabilityPolicy.VOLATILE
 
-        # Initialize the tf2 listener
-        self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
-
-        # Create the subscriber. This subscriber will receive an Image
-        # from the detectnet overlay video_frames topic. The queue size is 10 messages.
+        # Create the subscriber. This subscriber will receive lidar message
         self.subscription = self.create_subscription(
             LaserScan, 
             self.laser_topic,
-            self.laser_callback, 
+            self.laser_callback,
             qos_profile)
-        
+
         self.pub_twist = self.create_publisher(
             Twist, self.cmd_vel_topic, 20)
         
         self.create_timer(0.1, self.timer_callback)
 
         # Need to implement multi thread node 
-        self.thread = threading.Thread(target=self.rotate_callback)
+        self.thread = threading.Thread(target=self.rotate_callback, daemon=True)
         self.thread.start()
 
-    #
-    # Get robot angle from TF2 transform
-    #
-    def get_odom_angle(self):
-        # Get the current transform between the odom and base frames
-        try:
-            # Note, lookup_transform depend on ROS2 Node base class
-            t = self.tf_buffer.lookup_transform(
-                self.odom_frame, 
-                self.base_frame, 
-                rclpy.time.Time())
-            self.get_logger().debug('{}'.format(t.transform.rotation))
-        except:
-            self.get_logger().info('TF2 transform exception')
-            return 0.0
-        
-        # Convert the rotation from a quaternion to an Euler angle
-        return self.quat_to_angle(t.transform.rotation)
-
-
-    def quat_to_angle(self, quat):
-        rot = PyKDL.Rotation.Quaternion(quat.x, quat.y, quat.z, quat.w)
-        return rot.GetRPY()[2]
-
-
-    def normalize_angle(self, angle):
-        res = angle
-        # > 180  -> -360
-        while res > pi:
-            res -= 2.0 * pi
-        # < -180 -> + 360
-        while res < -pi:
-            res += 2.0 * pi
-        return res
 
     #
     # KMeans version laser subscription callback
@@ -173,7 +139,6 @@ class LaserCopilot(Node):
         # Collect lidar sample at 30 degrees
         self.lidarlib.collect_lidar_data(self.Angle, msg)
         self.lidarlib.collect_lidar_raw_data(msg)
-    
 
     #
     #   timer: move the robot base on the lidar data feedback
@@ -191,8 +156,8 @@ class LaserCopilot(Node):
                 self.last_move += 1
 
             return
-        
-        
+
+
         self.last_move = 0
 
         if self.rotate != True:
@@ -221,7 +186,7 @@ class LaserCopilot(Node):
                 (a_distance[0], a_angle[0]) = lidar_samples[index-1]
                 (a_distance[2], a_angle[2]) = lidar_samples[index+1]
 
-                
+
                 if ((a_distance[0] <= a_distance[2]) and (a_distance[0] <= (self.stop_distance + 0.05))):
                     # right
                     fine_tune_angle = 0.15
@@ -232,14 +197,13 @@ class LaserCopilot(Node):
                     fine_tune_angle = -0.15
                     fine_tune_closeup_area = 2
                     str_lidar_info = 'Closeup area -> LEFT -- [d:a]:%.2f:%.2f' %(a_distance[2], a_angle[2])
-                    
-                
+
+
                 if fine_tune_closeup_area == 2:
                     self.get_logger().info('{}'.format(str_lidar_info))
                 #   self.lidarlib.max_lidar_distance(lidar_samples, -70.0, 70.0, debug=True)
-                
 
-                
+
             # Detect obstacle in open area
             if self.fine_tune:
                 (probe_distance, probe_angle) = self.lidarlib.max_lidar_distance(lidar_samples, -70.0, 70.0, debug=False)
@@ -258,8 +222,8 @@ class LaserCopilot(Node):
 
             # debug output
             with np.printoptions(precision=3, suppress=True):
-                 self.get_logger().debug('numpy smple block front:[d,a]:{}:{} array:{}'.format(distance, angle, lidar_samples))
-                
+                self.get_logger().debug('numpy sample block front:[d,a]:{}:{} array:{}'.format(distance, angle, lidar_samples))
+
             # Front find obstacle - turn the robot
             if distance < self.stop_distance:
                 # First stop the robot
@@ -289,7 +253,7 @@ class LaserCopilot(Node):
 
                 # self.get_logger().info('Rotate:{} distance:{} raw:{}'.format(angle, distance, self.turn_status))
                 self.get_logger().info('Rotate status:{}'.format(self.turn_status))
-            
+
             else:
                 # Move robot forward
                 self.twist.linear.x = self.linear + fine_tune_speed
@@ -314,7 +278,6 @@ class LaserCopilot(Node):
                 self.get_logger().info("============== Rotate --> START ==============\n")
 
                 # Get the current rotation angle from TF2
-                # self.odom_angle = self.get_odom_angle()
                 self.odom_angle = self.lidarlib.get_odom_angle(self.tf_buffer, self.odom_frame, self.base_frame)
                 self.get_logger().info("ODOM angle={}:{}".format(str(self.odom_angle), str(degrees(self.odom_angle))))
                 self.get_logger().info("Turn status:{}".format(self.turn_status))
@@ -334,16 +297,16 @@ class LaserCopilot(Node):
                 # 30 -> 0.523
                 while abs(correction) > radians(20):
                     if not rclpy.utilities.ok():
+                        self.get_lobber().info("rotate thread exit")
                         return
 
                     # Rotate the robot to reduce the correction angle
                     self.twist.linear.x = 0.0
                     self.twist.angular.z = copysign(self.angular, correction)
                     self.pub_twist.publish(self.twist)
-                    time.sleep(0.2)
+                    time.sleep(0.5)
 
                     # Get the current rotation agne form tf2
-                    # self.odom_angle = self.get_odom_angle()
                     self.odom_angle = self.lidarlib.get_odom_angle(self.tf_buffer, self.odom_frame, self.base_frame)
                     self.get_logger().debug("odom_radian={} - {}".format(str(self.odom_angle), str(degrees(self.odom_angle))))
 
@@ -361,15 +324,14 @@ class LaserCopilot(Node):
                     # Store the current angle for the next comparison
                     last_angle = self.odom_angle
 
-                    
                     # Find the front obstacle distance
                     lidar_samples = self.lidarlib.get_lidar_samples()
                     (distance, angle, index) = self.lidarlib.front_lidar_distance(lidar_samples)
 
                     if abs(distance - float(self.turn_status.distance)) < 0.05:
                         self.get_logger().info("Rotate to expect distance:{} vs current: [d:a]:{}:{}".format(str(self.turn_status.distance), distance, angle))    
-                        break;
-                
+                        break
+
                 # Stop the robot
                 self.pub_twist.publish(Twist())
                 # Update the status flag
@@ -384,11 +346,11 @@ class LaserCopilot(Node):
                 self.turn_status = self.turn_status._replace(done=True)
 
             time.sleep(0.1)
-    
+
 
 def main(args=None):  
     rclpy.init(args=args)
-    
+
     laser_copilot_node = LaserCopilot()
 
     try:
@@ -398,7 +360,7 @@ def main(args=None):
     finally:
         # Destroy the node explictly - don't depend on garbage collector
         laser_copilot_node.destroy_node()
-        rclpy.shutdown()  
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':
