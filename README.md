@@ -11,18 +11,25 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 
 ### Jetbot tools video demos:
 ##### Lidar-assisted object avoidance self-driving:
-  [laser_avoidance.py](jetbot_tools/script/laser_avoidance.py) <br>
+- [launch file: laser_avoidance.launch.py](launch/laser_avoidance.launch.py) <br>
+- [ROS2 node: laser_avoidance.py](jetbot_tools/script/laser_avoidance.py) <br>
   [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
 ##### Real-time object detection and tracking:
+- [launch file: detect_copilot.launch.py](launch/detect_copilot.launch.py) <br>
+- [ROS2 node: detect_copilot.py](jetbot_tools/script/detect_copilot.py) <br>
   [<img src="https://img.youtube.com/vi/KeckfQseZ7E/hqdefault.jpg" width="250" height="170"
 />](https://www.youtube.com/embed/KeckfQseZ7E)
   [<img src="https://img.youtube.com/vi/qFJGvR46Qic/hqdefault.jpg" width="250" height="170"
 />](https://www.youtube.com/embed/qFJGvR46Qic)
 ##### Real-time object detection and distance measurement:
+- [launch file: follow_copilot.launch.py](launch/follow_copilot.launch.py) <br>
+- [ROS2 node: follow_copilot.py](jetbot_tools/script/follow_copilot.py) <br>
   [<img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/embed/tyB0vQvJUOY)
 ##### NAV2 TF2 position tracking and following:
+- [launch file: tf2_follow_copilot.launch.py](launch/tf2_follow_copilot.launch.py) <br>
+- [ROS2 node: tf2_listener_copilot.py](jetbot_tools/script/tf2_listener_copilot.py) <br>
   [<img src="docs/TF2_04.png" width="300" />]
   [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/jliHl-B6Ivo)
