@@ -11,6 +11,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 
 ### Jetbot tools video demos:
 ##### Lidar-assisted object avoidance self-driving:
+  [laser_avoidance.py](jetbot_tools/script/laser_avoidance.py) <br>
   [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
 ##### Real-time object detection and tracking:
