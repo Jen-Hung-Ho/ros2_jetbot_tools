@@ -16,6 +16,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
 ##### Real-time object detection and tracking:
+- ros2 launch jetbot_tools DNN_SSD_source.launch.py model_name:=ssd-mobilenet-v2 launch_video_source:=false topic:=/video_source/raw
 - [launch file: detect_copilot.launch.py](launch/detect_copilot.launch.py) <br>
 - [ROS2 node: detect_copilot.py](jetbot_tools/script/detect_copilot.py) <br>
   [<img src="https://img.youtube.com/vi/KeckfQseZ7E/hqdefault.jpg" width="250" height="170"
@@ -23,6 +24,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   [<img src="https://img.youtube.com/vi/qFJGvR46Qic/hqdefault.jpg" width="250" height="170"
 />](https://www.youtube.com/embed/qFJGvR46Qic)
 ##### Real-time object detection and distance measurement:
+- ros2 launch jetbot_tools DNN_SSD_source.launch.py model_name:=ssd-mobilenet-v2 launch_video_source:=false topic:=/video_source/raw
 - [launch file: follow_copilot.launch.py](launch/follow_copilot.launch.py) <br>
 - [ROS2 node: follow_copilot.py](jetbot_tools/script/follow_copilot.py) <br>
   [<img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="300" height="200"
