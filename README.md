@@ -23,6 +23,8 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 />](https://www.youtube.com/embed/tyB0vQvJUOY)
 ##### NAV2 TF2 position tracking and following:
   [<img src="docs/TF2_04.png" width="300" />]
+  [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"
+/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
 
   
 
@@ -41,6 +43,9 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
       <img src="docs/JetBot_NAV2_2023-04-21.png" width="340" />
       <img src="docs/JetBot_DetectNet_toys.png" width="300" />
     </p>
+- Robot:
+  - Jetson Nano Jetbot: https://www.waveshare.com/wiki/JetBot_ROS_AI_Kit
+  - GoPiGo3: https://www.dexterindustries.com/gopigo3/
 ### References
 - https://qengineering.eu/install-ubuntu-20.04-on-jetson-nano.html
 - https://docs.ros.org/en/foxy/index.html
