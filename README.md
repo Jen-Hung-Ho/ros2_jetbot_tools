@@ -9,7 +9,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 #### Here is a brief overview of the jetbot tools design diagram/architecture
 <img src="docs/JetBot_tool_design.png" width="700" />
 
-### Jetbot tools video demos:
+### Jetbot tools source code and video demos:
 ---
 - **Lidar-assisted object avoidance self-driving:**
   - Source code:
@@ -42,7 +42,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
     - ros2 launch jetbot_tools DNN_SSD_source.launch.py model_name:=ssd-mobilenet-v2 launch_video_source:=false topic:=/video_source/raw
     - ros2 launch jetbot_tools follow_copilot.launch.py param_file:=./jetbot_tools/param/follow_copilot_params.yaml
     - ros2 param get /follow_copilot follow_detect
-    - ros2 param set /follow_copilot follow_detect false <br>
+    - ros2 param set /follow_copilot follow_detect true <br>
   [<img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/embed/tyB0vQvJUOY)
 - **NAV2 TF2 position tracking and following:**
@@ -52,7 +52,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   - Usage:
     - Pre requirements: ros2 launch <follow_copilot.launch.py> or <detect_copilot.launch.py>
     - ros2 launch jetbot_tools tf2_follow_copilot.launch.py param_file:=./jetbot_tools/param/tf2_follow_copilot_params.yaml
-    - ros2 param set /tf2_follow start_follow true<br>
+    - ros2 param set /tf2_follow start_follow true <br>
     <img src="docs/TF2_04.png" width="300"/> [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
     
 ### Requirements:
@@ -74,6 +74,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   - Jetson Nano Jetbot: https://www.waveshare.com/wiki/JetBot_ROS_AI_Kit
     - https://github.com/waveshare/jetbot_pro  
   - GoPiGo3: https://www.dexterindustries.com/gopigo3/
+    - https://github.com/ros-gopigo3/gopigo3
     - https://github.com/slowrunner/ROS2-GoPiGo3
     <p float="left">
       <img src="docs/JetBot_1.jpg" width="200" height="200"/>
