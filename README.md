@@ -74,6 +74,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   - Jetson Nano Jetbot: https://www.waveshare.com/wiki/JetBot_ROS_AI_Kit
     - https://github.com/waveshare/jetbot_pro  
   - GoPiGo3: https://www.dexterindustries.com/gopigo3/
+    - https://github.com/ros-gopigo3/gopigo3
     - https://github.com/slowrunner/ROS2-GoPiGo3
     <p float="left">
       <img src="docs/JetBot_1.jpg" width="200" height="200"/>
