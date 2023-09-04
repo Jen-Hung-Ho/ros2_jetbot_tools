@@ -34,18 +34,27 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 />](https://www.youtube.com/embed/KeckfQseZ7E)
   [<img src="https://img.youtube.com/vi/qFJGvR46Qic/hqdefault.jpg" width="250" height="170"
 />](https://www.youtube.com/embed/qFJGvR46Qic)
-##### Real-time object detection and distance measurement:
-- ros2 launch jetbot_tools DNN_SSD_source.launch.py model_name:=ssd-mobilenet-v2 launch_video_source:=false topic:=/video_source/raw
-- [launch file: follow_copilot.launch.py](launch/follow_copilot.launch.py) <br>
-- [ROS2 node: follow_copilot.py](jetbot_tools/script/follow_copilot.py) <br>
+- **Real-time object detection and distance measurement:**
+  - Source code:
+    - [launch file: follow_copilot.launch.py](launch/follow_copilot.launch.py)
+    - [ROS2 node: follow_copilot.py](jetbot_tools/script/follow_copilot.py)
+  - Usage:
+    - ros2 launch jetbot_tools DNN_SSD_source.launch.py model_name:=ssd-mobilenet-v2 launch_video_source:=false topic:=/video_source/raw
+    - ros2 launch jetbot_tools follow_copilot.launch.py param_file:=./jetbot_tools/param/follow_copilot_params.yaml
+    - ros2 param get /follow_copilot follow_detect
+    - ros2 param set /follow_copilot follow_detect false <br>
   [<img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/embed/tyB0vQvJUOY)
-##### NAV2 TF2 position tracking and following:
-- [launch file: tf2_follow_copilot.launch.py](launch/tf2_follow_copilot.launch.py) <br>
-- [ROS2 node: tf2_listener_copilot.py](jetbot_tools/script/tf2_listener_copilot.py) <br>
+- **NAV2 TF2 position tracking and following:**
+  - Source code:
+    - [launch file: tf2_follow_copilot.launch.py](launch/tf2_follow_copilot.launch.py)
+    - [ROS2 node: tf2_listener_copilot.py](jetbot_tools/script/tf2_listener_copilot.py)
+  - Usage:
+    - Pre requirements: ros2 launch <follow_copilot.launch.py> or <detect_copilot.launch.py>
+    - ros2 launch jetbot_tools tf2_follow_copilot.launch.py param_file:=./jetbot_tools/param/tf2_follow_copilot_params.yaml
+    - ros2 param set /tf2_follow start_follow true <br>
   <img src="docs/TF2_04.png" width="300" />
-  [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"
-/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
+  [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
 
   
 ### Requirements:
