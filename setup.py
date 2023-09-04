@@ -23,10 +23,10 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='jetbot',
+    maintainer='Jen-Hung Ho',
     maintainer_email='jetbot@todo.todo',
-    description='TODO: Package description',
-    license='TODO: License declaration',
+    description='ROS2 nodes for Jetbot tools',
+    license='MIT',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
