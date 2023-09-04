@@ -10,15 +10,26 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 <img src="docs/JetBot_tool_design.png" width="700" />
 
 ### Jetbot tools video demos:
-##### Lidar-assisted object avoidance self-driving:
-- [launch file: laser_avoidance.launch.py](launch/laser_avoidance.launch.py) <br>
-- [ROS2 node: laser_avoidance.py](jetbot_tools/script/laser_avoidance.py) <br>
+---
+- **Lidar-assisted object avoidance self-driving:**
+  - Source code:
+    - [launch file: laser_avoidance.launch.py](launch/laser_avoidance.launch.py) <br>
+    - [ROS2 node: laser_avoidance.py](jetbot_tools/script/laser_avoidance.py) <br>
+  - Usage:
+    - ros2 launch jetbot_tools laser_avoidance.launch.py param_file:=./jetbot_tools/param/laser_avoidance_params.yaml
+    - ros2 param get /laser_avoidance start
+    - ros2 param set /laser_avoidance start true <br>
   [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
-##### Real-time object detection and tracking:
-- ros2 launch jetbot_tools DNN_SSD_source.launch.py model_name:=ssd-mobilenet-v2 launch_video_source:=false topic:=/video_source/raw
-- [launch file: detect_copilot.launch.py](launch/detect_copilot.launch.py) <br>
-- [ROS2 node: detect_copilot.py](jetbot_tools/script/detect_copilot.py) <br>
+- **Real-time object detection and tracking:**
+  - Source code:
+    - [launch file: detect_copilot.launch.py](launch/detect_copilot.launch.py) 
+    - [ROS2 node: detect_copilot.py](jetbot_tools/script/detect_copilot.py)
+  - Usage:
+    - ros2 launch jetbot_tools DNN_SSD_source.launch.py model_path:=/home/jetbot/dev_ws/pytorch-ssd/models/toy/ssd-mobilenet.onnx class_labels_path:=/home/jetbot/dev_ws/pytorch-ssd/models/toy/labels.txt launch_video_source:=false topic:=/video_source/raw
+    - ros2 launch jetbot_tools detect_copilot.launch.py param_file:=./jetbot_tools/param/detect_toys_copilot_params.yaml
+    - ros2 param get /detect_copilot follow_detect
+    - ros2 param set /detect_copilot follow_detect true <br>
   [<img src="https://img.youtube.com/vi/KeckfQseZ7E/hqdefault.jpg" width="250" height="170"
 />](https://www.youtube.com/embed/KeckfQseZ7E)
   [<img src="https://img.youtube.com/vi/qFJGvR46Qic/hqdefault.jpg" width="250" height="170"
