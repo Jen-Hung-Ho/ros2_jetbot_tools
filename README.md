@@ -32,12 +32,11 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 ##### NAV2 TF2 position tracking and following:
 - [launch file: tf2_follow_copilot.launch.py](launch/tf2_follow_copilot.launch.py) <br>
 - [ROS2 node: tf2_listener_copilot.py](jetbot_tools/script/tf2_listener_copilot.py) <br>
-  [<img src="docs/TF2_04.png" width="300" />]
+  <img src="docs/TF2_04.png" width="300" />
   [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/jliHl-B6Ivo)
 
   
-
 ### Requirements:
 - Jetson Nano:
   - Ububnu 20.04: https://qengineering.eu/install-ubuntu-20.04-on-jetson-nano.html
@@ -50,18 +49,24 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   - ROS2 foxy: https://docs.ros.org/en/foxy/index.html
   - NAV2 : https://navigation.ros.org/ <br>
     <p float="left">
-      <img src="docs/JetBot_NAV2_2023-04-21.png" width="340" />
-      <img src="docs/JetBot_DetectNet_toys.png" width="300" />
+      <img src="docs/JetBot_NAV2_2023-04-21.png" width="330" />
+      <img src="docs/JetBot_DetectNet_toys.png" width="290" />
     </p>
 - Robot:
   - Jetson Nano Jetbot: https://www.waveshare.com/wiki/JetBot_ROS_AI_Kit
+    - https://github.com/waveshare/jetbot_pro  
   - GoPiGo3: https://www.dexterindustries.com/gopigo3/
+    - https://github.com/slowrunner/ROS2-GoPiGo3
+    <p float="left">
+      <img src="docs/JetBot_1.jpg" width="200" height="200"/>
+      <img src="docs/GoPiGo3_1.jpg" width="200" height="200"/>
+    </p>
+ 
+    
 ### References
 - https://qengineering.eu/install-ubuntu-20.04-on-jetson-nano.html
 - https://docs.ros.org/en/foxy/index.html
 - https://navigation.ros.org/
 - https://github.com/dusty-nv/jetson-inference
 - https://github.com/dusty-nv/ros_deep_learning
-- https://github.com/waveshare/jetbot_pro
-- https://github.com/slowrunner/ROS2-GoPiGo3
 - https://automaticaddison.com/the-ultimate-guide-to-the-ros-2-navigation-stack/
