@@ -52,11 +52,9 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   - Usage:
     - Pre requirements: ros2 launch <follow_copilot.launch.py> or <detect_copilot.launch.py>
     - ros2 launch jetbot_tools tf2_follow_copilot.launch.py param_file:=./jetbot_tools/param/tf2_follow_copilot_params.yaml
-    - ros2 param set /tf2_follow start_follow true <br>
-  <img src="docs/TF2_04.png" width="300" />
-  [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
-
-  
+    - ros2 param set /tf2_follow start_follow true<br>
+    <img src="docs/TF2_04.png" width="300"/> [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
+    
 ### Requirements:
 - Jetson Nano:
   - Ububnu 20.04: https://qengineering.eu/install-ubuntu-20.04-on-jetson-nano.html
