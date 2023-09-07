@@ -200,8 +200,11 @@ class FollowDetectCopilot(Node):
         # Collect lidar raw data 
         self.lidarlib.collect_lidar_raw_data(msg)
         self.lidar_ready = True
-        
 
+
+    #
+    # Retrieve detection class description from list index
+    #
     def GetClassDesc(self, index):
         if index >= len(self.class_label_names):
             self.get_logger().info('invalid class {}'.format(index))
@@ -210,6 +213,9 @@ class FollowDetectCopilot(Node):
             return self.class_label_names[index]
 
 
+    #
+    # Retrieve image center point from /detectnet/detectnet node overlay output
+    #
     def overlay_callback(self, data):
         # Convert ROS Image message to OpenCV image
         image = self.br.imgmsg_to_cv2(data)
@@ -223,6 +229,10 @@ class FollowDetectCopilot(Node):
 
         # self.get_logger().info('video :col-row[{},{}], center:[{}, {}]'.format(self.cols, self.rows, self.center_x, self.center_y))
 
+
+    #
+    # Watchdog timer
+    #
     def timer_callback(self):
         self.last_detection -= 1
         stop = 0
@@ -233,6 +243,9 @@ class FollowDetectCopilot(Node):
             self.pub_twist.publish(self.twist)
             self.get_logger().info('Stop robot  ---------------')
 
+    #
+    # detectnet node detections subscription call_back
+    #
     def detection_callback(self, msg):
         # self.get_logger().info('detection {}'.format(detections))
         
@@ -269,7 +282,7 @@ class FollowDetectCopilot(Node):
                         self.get_logger().info('Fusion:[{}] id:[{}]=[{}] score:[{:.2f}] distance:[{:.2f}]'.format(i, id, label, score, distance))
 
                 i += 1
-            
+
             if self.follow_detect == True:
                 if (follow == True) and (probe_distance > self.stop_distance):
                     self.last_detection = self.stop_count
@@ -279,7 +292,9 @@ class FollowDetectCopilot(Node):
                     self.get_logger().info('Too close distance={}'.format(probe_distance))
 
 
-
+    #
+    # Retrieve /detectnet/detectnet node detection label list
+    #
     def get_class_label_parameters(self):
         self.get_logger().info('DetectCopilot --: "%s"' % 'BEGIN')
 
@@ -311,7 +326,8 @@ class FollowDetectCopilot(Node):
 
         self.get_logger().info('param_callback --: "%s"' % 'END')
 
-    
+
+
     def saturate(self, value, min, max):
         if value <= min:
             return(min)
@@ -319,6 +335,7 @@ class FollowDetectCopilot(Node):
             return(max)
         else:
             return(value)
+
 
     #
     # Fusion the angle between camera center and detect object and lidar distance
@@ -341,7 +358,11 @@ class FollowDetectCopilot(Node):
            
         return probe_angle, probe_distance
 
-        
+
+    #
+    # Caculate rotate ange by measure between camera Field of View (FOV) and detection image postion
+    # Post Twist command to move robot follow the detection object
+    #
     def detect_and_follow(self, detection, probe_angle, probe_distance):
         # self.get_logger().info('detect and follow:()'.format('hoj'))
         
