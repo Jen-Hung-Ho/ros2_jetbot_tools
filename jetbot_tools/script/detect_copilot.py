@@ -119,6 +119,10 @@ class DetectCopilot(Node):
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
 
+
+    #
+    # Retrieve detection class description from list index
+    #
     def GetClassDesc(self, index):
         if index >= len(self.class_label_names):
             self.get_logger().info('invalid class {}'.format(index))
@@ -126,6 +130,10 @@ class DetectCopilot(Node):
         else:
             return self.class_label_names[index]
 
+
+    #
+    # Retrieve image center point from /detectnet/detectnet node overlay output
+    #
     def overlay_callback(self, data):
         # Convert ROS Image message to OpenCV image
         image = self.br.imgmsg_to_cv2(data)
@@ -139,6 +147,10 @@ class DetectCopilot(Node):
 
         # self.get_logger().info('video :col-row[{},{}], center:[{}, {}]'.format(cols, rows, self.center_x, self.center_y))
 
+
+    #
+    # Watchdog timer
+    #
     def timer_callback(self):
         self.last_detection -= 1
         stop = 0
@@ -149,6 +161,10 @@ class DetectCopilot(Node):
             self.pub_twist.publish(self.twist)
             self.get_logger().info('Stop robot  ---------------')
 
+
+    #
+    # detectnet node detections subscription call_back
+    #
     def detection_callback(self, msg):
         # self.get_logger().info('detection {}'.format(detections))
         
@@ -183,10 +199,14 @@ class DetectCopilot(Node):
                 elif follow == True and area > self.stop_size / 1.0:
                     self.get_logger().info('Too close area={}'.format(area))
 
-            
+
+    #
+    # Retrieve /detectnet/detectnet node detection label list
+    #
     def get_class_label_parameters(self):
         self.get_logger().info('DetectCopilot --: "%s"' % 'BEGIN')
 
+        # ros2 param get /detectnet/detectnet class_labels_<GUIID>
         node = rclpy.create_node('dummy_node')
         executor.add_node(node)
         # parameters = ['class_labels_10909380423933757363']
@@ -215,7 +235,7 @@ class DetectCopilot(Node):
 
         self.get_logger().info('param_callback --: "%s"' % 'END')
 
-    
+
     def saturate(self, value, min, max):
         if value <= min:
             return(min)
@@ -224,11 +244,15 @@ class DetectCopilot(Node):
         else:
             return(value)
 
-        
+
+    #
+    # Caculate rotate ange by measure between image centoer and detection image postion
+    # Post Twist command to move robot follow the detection object
+    #
     def detect_and_follow(self, detection):
         # self.get_logger().info('detect and follow:()'.format('hoj'))
 
-        # 1) calculate Area
+        # 1) calculate detection area size
         area = detection.bbox.size_x * detection.bbox.size_y
         turn = 0.0
         self.twist.linear.x = 0.0

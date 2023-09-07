@@ -54,7 +54,7 @@ from ..include.tf2_utilities import *
 
 
 
-class CalibrateLinear(Node):
+class Tf2ListenerCopilot(Node):
     
     i = 0
     msg = String()
@@ -134,6 +134,9 @@ class CalibrateLinear(Node):
         self.thread.start()
 
 
+    #
+    # tf2_ros.transform_listener: TransformListener thread call_back
+    #
     def thread_callback(self):
         self.get_logger().info('Thread callback : {}'.format("TF2 listener") )
 
@@ -180,6 +183,10 @@ class CalibrateLinear(Node):
             rate.sleep()
 
 
+    #
+    # tf2_ros.buffer.lookup_transform()
+    # Retrieve transform between two robot coordinate frames
+    #
     def get_position(self):
         # Get the current transform between the odom and base frames
         try:
@@ -206,15 +213,15 @@ class CalibrateLinear(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    calibratelinear_node = CalibrateLinear()
+    Tf2_listener_copilot_node = Tf2ListenerCopilot()
 
     try:
-        rclpy.spin(calibratelinear_node)
+        rclpy.spin(Tf2_listener_copilot_node)
     except KeyboardInterrupt:
-        print('\ncontrol-c: caliberateangle_node shutting down')
+        print('\ncontrol-c: Tf2_listener_copilot_node shutting down')
     finally:
         # Destroy the node explictly - don't depend on garbage collector
-        calibratelinear_node.destroy_node()
+        Tf2_listener_copilot_node.destroy_node()
         rclpy.shutdown()
 
 
