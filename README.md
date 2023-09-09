@@ -1,4 +1,4 @@
-# jetbot_tools
+# Jetbot Tools with Jetson Inference DNN Vision Library for NAV2 ROS2 Robot
 Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision library for NVIDIA Jetson. With Jetbot tools, you can build your own low-cost 2-wheel robot with a camera and a lidar sensor and make it do the following amazing things:
 
 - Lidar-assisted object avoidance self-driving: Your robot can navigate autonomously and avoid obstacles using the lidar sensor.
@@ -28,7 +28,7 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
     - ros2 launch jetbot_tools laser_avoidance.launch.py param_file:=./jetbot_tools/param/laser_avoidance_params.yaml
     - ros2 param get /laser_avoidance start
     - ros2 param set /laser_avoidance start true <br>
-  [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
+  <img src="docs/JetBot_lidar.png" width="300"/> [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
 - **Real-time object detection and tracking:**
   - Code logic explanation:
