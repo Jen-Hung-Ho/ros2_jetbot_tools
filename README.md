@@ -1,4 +1,4 @@
-# jetbot_tools
+# Jetbot Tools with Jetson Inference DNN Vision Library for NAV2 ROS2 Robot
 Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision library for NVIDIA Jetson. With Jetbot tools, you can build your own low-cost 2-wheel robot with a camera and a lidar sensor and make it do the following amazing things:
 
 - Lidar-assisted object avoidance self-driving: Your robot can navigate autonomously and avoid obstacles using the lidar sensor.
@@ -12,6 +12,15 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
 ### Jetbot tools source code and video demos:
 ---
 - **Lidar-assisted object avoidance self-driving:**
+  - Code logic explanation:
+    - Use the LIDAR sensor to collect data from all directions and divide it into 12 segments of 30 degrees each
+    - Compare the distances of the objects in the first three segments (front 90 degrees) and select the segment with the farthest open area
+    - If the object in the selected segment is closer than a threshold distance to the target object
+      - Repeat the comparison for the first six segments (front 180 degrees) and select the segment with the farthest object
+      - If the object in the selected segment is still closer than the threshold distance to the target object
+        - Repeat the comparison for all 12 segments (360 degrees) and select the segment with the farthest open area
+          - Rotate the robot to face the selected segment
+    - Publish a ROS2 Twist message to move the robot towards the open area 
   - Source code:
     - [launch file: laser_avoidance.launch.py](launch/laser_avoidance.launch.py) <br>
     - [ROS2 node: laser_avoidance.py](jetbot_tools/script/laser_avoidance.py) <br>
@@ -19,9 +28,16 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
     - ros2 launch jetbot_tools laser_avoidance.launch.py param_file:=./jetbot_tools/param/laser_avoidance_params.yaml
     - ros2 param get /laser_avoidance start
     - ros2 param set /laser_avoidance start true <br>
-  [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
+  <img src="docs/JetBot_lidar.png" width="300"/> [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
 - **Real-time object detection and tracking:**
+  - Code logic explanation:
+    - Use Jetson DNN inference ROS2 detectnet node to detect the targeting object position of the image capture from camera
+      - https://github.com/dusty-nv/ros_deep_learning#detectnet-node-1
+    - Calculate the angle between the image center and the targeting position
+    - Use the size of the detected image to determine the distance between robot to the target
+    - Send a ROS2 Twist message to move the robot follow the detection object
+    - Stop the robot if it is too close to the target
   - Source code:
     - [launch file: detect_copilot.launch.py](launch/detect_copilot.launch.py) 
     - [ROS2 node: detect_copilot.py](jetbot_tools/script/detect_copilot.py)
@@ -35,6 +51,15 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   [<img src="https://img.youtube.com/vi/qFJGvR46Qic/hqdefault.jpg" width="250" height="170"
 />](https://www.youtube.com/embed/qFJGvR46Qic)
 - **Real-time object detection and distance measurement:**
+  - Code logic explanation:
+    - Use Jetson DNN inference ROS2 detectnet node to detect the targeting object position of the image capture from camera
+      - https://github.com/dusty-nv/ros_deep_learning#detectnet-node-1
+    - The LIDAR sensor collected 360-degree ROS2 LaserScan raw data
+      - http://docs.ros.org/en/api/sensor_msgs/html/msg/LaserScan.html
+    - Calculate the rotation angle by measuring the difference between the camera’s field of view (FOV) and the detection image position
+    - Use lidar data on rotation angle to calculate the distance of an object
+    - Send a ROS2 Twist message to move the robot follow the detection object
+    - Stop the robot if it is too close to the target
   - Source code:
     - [launch file: follow_copilot.launch.py](launch/follow_copilot.launch.py)
     - [ROS2 node: follow_copilot.py](jetbot_tools/script/follow_copilot.py)
@@ -46,6 +71,10 @@ Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision li
   [<img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/embed/tyB0vQvJUOY)
 - **NAV2 TF2 position tracking and following:**
+  - Code logic explanation:
+    - To run this tf2_follow_copilot program, you need two robots that can use tf2 broadcaster to publish their coordinate frames.
+    - The tf2_follow_copilot program uses a tf2 listener to calculate the difference between the robot frames and determine the direction and distance to follow.
+    - The program publishes a ROS2 Twist message to control the GoPiGo3 robot's speed and steering, so that it can follow the jetbot robot.
   - Source code:
     - [launch file: tf2_follow_copilot.launch.py](launch/tf2_follow_copilot.launch.py)
     - [ROS2 node: tf2_listener_copilot.py](jetbot_tools/script/tf2_listener_copilot.py)
