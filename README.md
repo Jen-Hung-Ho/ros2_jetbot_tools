@@ -1,5 +1,5 @@
 # Jetbot Tools with Jetson Inference DNN Vision Library for NAV2 ROS2 Robot
-Jetbot tools is a set of ROS2 nodes that uses the Jetson inference DNN vision library for NVIDIA Jetson. With Jetbot tools, you can build your own low-cost 2-wheel robot with a camera and a lidar sensor and make it do the following amazing things:
+Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision library for NVIDIA Jetson. With Jetbot tools, you can build your own low-cost 2-wheel robot with a camera and a lidar sensor and make it do the following amazing things:
 
 - Lidar-assisted object avoidance self-driving: Your robot can navigate autonomously and avoid obstacles using the lidar sensor.
 - Real-time object detection and tracking: Your robot can detect objects using the SSD Mobilenet V2 model. You can also make your robot follow a specific object that it detects.
