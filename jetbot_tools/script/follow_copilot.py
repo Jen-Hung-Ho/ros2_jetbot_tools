@@ -54,7 +54,7 @@ from math import radians, copysign, pi, degrees
 import PyKDL
 
 from ..include.lidar_utilities import LidarTools
-
+from ..include.node_parameter_utility import NodeParamTools
 
 # logging format
 # os.environ['RCUTILS_LOG_TIME_EXPERIMENTAL'] = '1'
@@ -149,6 +149,9 @@ class FollowDetectCopilot(Node):
         # Add parameters callback 
         self.add_on_set_parameters_callback(self.parameter_callback)
 
+        # self.init_ros_nodes()
+        self.node_param_util = NodeParamTools(self, executor)
+
         qos_profile = QoSProfile(depth=10)
         if self.QosReliability:
             qos_profile.reliability = QoSReliabilityPolicy.BEST_EFFORT
@@ -187,6 +190,13 @@ class FollowDetectCopilot(Node):
     
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
+
+    #
+    # Remove nodes for get/set parameter service call
+    #
+    def cleanup(self):
+        self.node_param_util.cleanup()
+        pass
 
     #
     # KMeans version laser subscription callback
@@ -253,6 +263,8 @@ class FollowDetectCopilot(Node):
         if len(self.class_label_names) == 0:
             self.get_class_label_parameters()
 
+        if not self.follow_detect:
+            return
 
         for detection in msg.detections:
             # http://docs.ros.org/en/api/vision_msgs/html/msg/Detection2D.html
@@ -280,16 +292,14 @@ class FollowDetectCopilot(Node):
                             self.get_logger().info('Fusion target:[{}]- [a:d]:{:.2f}:{:.2f}'.format(i, probe_angle, probe_distance))
                     else:
                         self.get_logger().info('Fusion:[{}] id:[{}]=[{}] score:[{:.2f}] distance:[{:.2f}]'.format(i, id, label, score, distance))
-
                 i += 1
 
-            if self.follow_detect == True:
-                if (follow == True) and (probe_distance > self.stop_distance):
-                    self.last_detection = self.stop_count
-                    self.detect_and_follow(detection, probe_angle, probe_distance)
-                    self.get_logger().info('Follow target-[a:d]:{:.2f}:{:.2f}'.format(probe_angle, probe_distance))
-                elif (follow == True) and (probe_distance <= self.stop_distance):
-                    self.get_logger().info('Too close distance={}'.format(probe_distance))
+            if (follow == True) and (probe_distance > self.stop_distance):
+                self.last_detection = self.stop_count
+                self.detect_and_follow(detection, probe_angle, probe_distance)
+                self.get_logger().info('Follow target-[a:d]:{:.2f}:{:.2f}'.format(probe_angle, probe_distance))
+            elif (follow == True) and (probe_distance <= self.stop_distance):
+                self.get_logger().info('Too close distance={}'.format(probe_distance))
 
 
     #
@@ -298,34 +308,15 @@ class FollowDetectCopilot(Node):
     def get_class_label_parameters(self):
         self.get_logger().info('DetectCopilot --: "%s"' % 'BEGIN')
 
-        node = rclpy.create_node('dummy_node')
-        executor.add_node(node)
-        # parameters = ['class_labels_10909380423933757363']
-        parameters = [self.class_labels]
-        response = call_get_parameters(node=node, 
-                                #node_name='/detectnet/detectnet', 
-                                node_name=self.node_name,
-                                parameter_names=parameters)
-        
-        if len(response.values) >= 1:
-            # print(response.values)
-            # txtract type specific value
-            pvalue = response.values[0]
-            if pvalue.type == ParameterType.PARAMETER_STRING_ARRAY:
-                # print(pvalue.string_array_value)
-                self.get_logger().info('DetectCopilot --: "%s"' % pvalue.string_array_value)
-                self.class_label_names = pvalue.string_array_value
+        passfail, value = self.node_param_util.try_get_node_parameters(self.node_name, self.class_labels)
 
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(0)))
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(1)))
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(2)))
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(3)))
-
-        executor.remove_node(node)
-        node.destroy_node()
+        if passfail:
+            self.get_logger().debug("detectnet label:{}".format(value.string_array_value))
+            self.class_label_names = value.string_array_value
+            # person index 1
+            # self.get_logger().info('class name:{}'.format(self.GetClassDesc(1)))
 
         self.get_logger().info('param_callback --: "%s"' % 'END')
-
 
 
     def saturate(self, value, min, max):
@@ -393,14 +384,19 @@ def main(args=None):
     global executor
     executor = rclpy.executors.MultiThreadedExecutor()
 
-    
     follow_copilot_node = FollowDetectCopilot()
     executor.add_node(follow_copilot_node)
 
-    # rclpy.spin(parameter)
-    executor.spin()
-
-    rclpy.shutdown()
+    try:
+        # rclpy.spin(parameter)
+        executor.spin()
+    except KeyboardInterrupt:
+        print('\ncontrol-c: follow_copilot_node_node shutting down')
+    finally:
+        # Destroy the node explictly - don't depend on garbage collector
+        follow_copilot_node.cleanup()
+        follow_copilot_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

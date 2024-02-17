@@ -19,9 +19,10 @@ def generate_launch_description():
         package='jetbot_tools',
         executable='follow_copilot',
         output="screen",
-        parameters=[LaunchConfiguration('param_file')],
-        name='follow_copilot')
-    
+        parameters=[LaunchConfiguration('param_file')]
+    )
+
+
     ld = LaunchDescription()
 
     # Add any actions

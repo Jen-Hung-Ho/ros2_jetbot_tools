@@ -1,0 +1,12 @@
+laser_avoidance:
+  ros__parameters:
+    qos_reliability: true
+    laser_topic: "/scan"
+    cmd_vel_topic: "/cmd_vel"
+    base_frame: "jetbot1/base_footprint"
+    angle: 30
+    linear: 0.1
+    angular: 0.2
+    stop_distance: 0.50
+    start: false
+    use_namespace: false

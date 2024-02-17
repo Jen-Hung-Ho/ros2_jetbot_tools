@@ -18,8 +18,16 @@ def generate_launch_description():
 
   # Launch configuration variables specific to vidio source 
   launch_video_source = LaunchConfiguration('launch_video_source')
-  
+  jetbot_ns = LaunchConfiguration('namespace')
+  use_namespace = LaunchConfiguration('use_namespace')
+
   # Declare the launch arguments
+  jetbot_ns_launch_arg = DeclareLaunchArgument(
+    name='namespace', default_value='jetbot1')
+    
+  use_namespace_cmd = DeclareLaunchArgument(
+    name='use_namespace', default_value='True')
+
   # video_source.ros2.launch arguments
   declare_launch_video_source = DeclareLaunchArgument(
    'launch_video_source', default_value='False')
@@ -94,9 +102,25 @@ def generate_launch_description():
    
   # Publish jetbot camera image via OpenCV
   camera_publisher_cmd = Node(
+      condition=UnlessCondition(use_namespace),
       package = 'jetbot_tools',
       executable = 'img_subscriber',
       name = 'img_subscriber',
+      output = 'screen',
+      emulate_tty = True,
+      parameters = [
+          {'sub_topic': LaunchConfiguration('ovelay_topic')},
+          {'pub_topic': LaunchConfiguration('pub_topic')},
+          {'scale_percent': LaunchConfiguration('scale_percent')}
+        ]
+    )
+
+  camera_publisher_ns_cmd = Node(
+      condition=IfCondition(use_namespace),
+      package = 'jetbot_tools',
+      executable = 'img_subscriber',
+      name = 'img_subscriber',
+      namespace=jetbot_ns,
       output = 'screen',
       emulate_tty = True,
       parameters = [
@@ -110,6 +134,8 @@ def generate_launch_description():
   ld = LaunchDescription()
 
   # Add any actions
+  ld.add_action(jetbot_ns_launch_arg)
+  ld.add_action(use_namespace_cmd)
   ld.add_action(declare_launch_video_source)
   ld.add_action(input)
   ld.add_action(input_width)
@@ -132,5 +158,6 @@ def generate_launch_description():
   ld.add_action(video_source_node_cmd)
   ld.add_action(detectnet_node_cmd)
   ld.add_action(camera_publisher_cmd)
+  ld.add_action(camera_publisher_ns_cmd)
 
   return ld

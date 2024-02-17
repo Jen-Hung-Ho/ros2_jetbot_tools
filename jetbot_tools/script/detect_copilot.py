@@ -41,6 +41,8 @@ from geometry_msgs.msg import Point
 from geometry_msgs.msg import Twist
 from cv_bridge import CvBridge, CvBridgeError # Package to convert between ROS and OpenCV Images
 
+from jetbot_tools.include.node_parameter_utility import NodeParamTools
+
 # logging format
 os.environ['RCUTILS_LOG_TIME_EXPERIMENTAL'] = '1'
 # os.environ['RCUTILS_CONSOLE_OUTPUT_FORMAT'] = '[{severity}] [{time:.2f}] [{name}]: {message}'
@@ -97,6 +99,9 @@ class DetectCopilot(Node):
         # Add parameters callback 
         self.add_on_set_parameters_callback(self.parameter_callback)
 
+        # self.init_ros_nodes()
+        self.node_param_util = NodeParamTools(self, executor)
+
         # Create the subscriber. This subscriber will receive an Image
         # from the detectnet overlay video_frames topic. The queue size is 10 messages.
         self.subscription = self.create_subscription(
@@ -114,10 +119,19 @@ class DetectCopilot(Node):
         self.pub_twist = self.create_publisher(
             Twist, self.cmd_vel_topic, 10)
 
+
+
         self.create_timer(0.2, self.timer_callback)
     
         # Used to convert between ROS and OpenCV images
         self.br = CvBridge()
+
+    #
+    # Remove nodes for get/set parameter service call
+    #
+    def cleanup(self):
+        self.node_param_util.cleanup()
+        pass
 
 
     #
@@ -206,32 +220,13 @@ class DetectCopilot(Node):
     def get_class_label_parameters(self):
         self.get_logger().info('DetectCopilot --: "%s"' % 'BEGIN')
 
-        # ros2 param get /detectnet/detectnet class_labels_<GUIID>
-        node = rclpy.create_node('dummy_node')
-        executor.add_node(node)
-        # parameters = ['class_labels_10909380423933757363']
-        parameters = [self.class_labels]
-        response = call_get_parameters(node=node, 
-                                #node_name='/detectnet/detectnet', 
-                                node_name=self.node_name,
-                                parameter_names=parameters)
-        
-        if len(response.values) >= 1:
-            # print(response.values)
-            # txtract type specific value
-            pvalue = response.values[0]
-            if pvalue.type == ParameterType.PARAMETER_STRING_ARRAY:
-                # print(pvalue.string_array_value)
-                self.get_logger().info('DetectCopilot --: "%s"' % pvalue.string_array_value)
-                self.class_label_names = pvalue.string_array_value
+        passfail, value = self.node_param_util.try_get_node_parameters(self.node_name, self.class_labels)
 
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(0)))
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(1)))
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(2)))
-            self.get_logger().info('class name:{}'.format(self.GetClassDesc(3)))
-
-        executor.remove_node(node)
-        node.destroy_node()
+        if passfail:
+            self.get_logger().debug("detectnet label:{}".format(value.string_array_value))
+            self.class_label_names = value.string_array_value
+            # person index 1
+            # self.get_logger().info('class name:{}'.format(self.GetClassDesc(1)))
 
         self.get_logger().info('param_callback --: "%s"' % 'END')
 
@@ -289,14 +284,20 @@ def main(args=None):
     global executor
     executor = rclpy.executors.MultiThreadedExecutor()
 
-    
+
     detect_copilot_node = DetectCopilot()
     executor.add_node(detect_copilot_node)
 
-    # rclpy.spin(parameter)
-    executor.spin()
-
-    rclpy.shutdown()
+    try:
+        # rclpy.spin(parameter)
+        executor.spin()
+    except KeyboardInterrupt:
+        print('\ncontrol-c: detect_copilot_node shutting down')
+    finally:
+        # Destroy the node explictly - don't depend on garbage collector
+        detect_copilot_node.cleanup()
+        detect_copilot_node.destroy_node()
+        rclpy.shutdown()
 
 
 if __name__ == '__main__':

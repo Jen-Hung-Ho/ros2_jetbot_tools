@@ -5,9 +5,10 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
 - Real-time object detection and tracking: Your robot can detect objects using the SSD Mobilenet V2 model. You can also make your robot follow a specific object that it detects.
 - Real-time object detection and distance measurement: Your robot can detect and measure the distance of objects using the SSD Mobilenet V2 model and the lidar sensor. You can also make your robot follow a specific object that it detects and stop when it is too close to the object.
 - NAV2 TF2 position tracking and following: Your robot can track its own position and follow another Jetbot robot using the NAV2 TF2 framework.
+- Empower your robot with voice control: Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-to-Action Tools](https://github.com/Jen-Hung-Ho/jetbot_voice).
 
 #### Here is a brief overview of the jetbot tools design diagram/architecture
-<img src="docs/JetBot_tool_design.png" width="700" />
+<img src="docs/JetBot_tool_design_2.png" width="700" />
 
 ### Jetbot tools source code and video demos:
 ---
@@ -83,6 +84,11 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
     - ros2 launch jetbot_tools tf2_follow_copilot.launch.py param_file:=./jetbot_tools/param/tf2_follow_copilot_params.yaml
     - ros2 param set /tf2_follow start_follow true <br>
     <img src="docs/TF2_04.png" width="300"/> [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
+- **Empower your robot with voice control:**
+  - Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-to-Action Tools!](https://github.com/Jen-Hung-Ho/jetbot_voice).
+  - The Jetbot Voice-to-Action tools integrates the [Jetson Automatic Speech Recognition (ASR) library](https://github.com/dusty-nv/jetson-voice), empowering your robot to understand and respond to spoken commands. Enhance interactions with features like natural chat greetings, object avoidance self-driving, and real-time person following, and basic robot navigation movement. <br>
+  [<img src="https://img.youtube.com/vi/SynIj1pxzdQ/hqdefault.jpg" width="300" height="200"
+/>](https://youtu.be/SynIj1pxzdQ)
     
 ### Requirements:
 - Jetson Nano:
@@ -117,4 +123,7 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
 - https://navigation.ros.org/
 - https://github.com/dusty-nv/jetson-inference
 - https://github.com/dusty-nv/ros_deep_learning
+- https://github.com/dusty-nv/jetson-voice
+- https://github.com/dusty-nv/jetson-voice/tree/master/ros/jetson_voice_ros
+- https://github.com/Jen-Hung-Ho/jetbot_voice
 - https://automaticaddison.com/the-ultimate-guide-to-the-ros-2-navigation-stack/
