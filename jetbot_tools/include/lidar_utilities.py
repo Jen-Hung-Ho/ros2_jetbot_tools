@@ -105,10 +105,7 @@ class LidarTools():
 
         try:
             # Get the current transform from the odom to base frames
-            t = tf_buffer.lookup_transform(
-                odom_frame, 
-                base_frame, 
-                rclpy.time.Time())
+            t = self.get_odom_transform(tf_buffer, odom_frame, base_frame)
             self.logger.debug('{}'.format(t.transform.rotation))
         except TransformException as ex:
             # self.logger.info('TF2 transform exception')
@@ -117,6 +114,14 @@ class LidarTools():
 
         # Convert the rotation from a quaternion to an Euler angle
         return self.quat_to_angle(t.transform.rotation)
+
+    def get_odom_transform(self, tf_buffer, odom_frame, base_frame):
+        # Get the current transform from the odom to base frames
+        t = tf_buffer.lookup_transform(
+            odom_frame, 
+            base_frame, 
+            rclpy.time.Time())
+        return t
 
     def quat_to_angle(self, quat):
         rot = PyKDL.Rotation.Quaternion(quat.x, quat.y, quat.z, quat.w)

@@ -12,6 +12,6 @@ follow_copilot:
     fov: 90.0
     score: 0.50
     stop_count: 15
-    follow_detect: true
+    follow_detect: false
     tracking_objects: ['person','dog']
     debug: true
