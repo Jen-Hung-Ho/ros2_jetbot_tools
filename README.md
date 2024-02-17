@@ -5,7 +5,7 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
 - Real-time object detection and tracking: Your robot can detect objects using the SSD Mobilenet V2 model. You can also make your robot follow a specific object that it detects.
 - Real-time object detection and distance measurement: Your robot can detect and measure the distance of objects using the SSD Mobilenet V2 model and the lidar sensor. You can also make your robot follow a specific object that it detects and stop when it is too close to the object.
 - NAV2 TF2 position tracking and following: Your robot can track its own position and follow another Jetbot robot using the NAV2 TF2 framework.
-- Empower your robot with voice control: Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-to-Action Tools](https://github.com/Jen-Hung-Ho/jetbot_voice).
+- Empower your robot with voice control: Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-to-Action Tools](https://github.com/Jen-Hung-Ho/ros2_jetbot_voice).
 
 #### Here is a brief overview of the jetbot tools design diagram/architecture
 <img src="docs/JetBot_tool_design_2.png" width="700" />
@@ -125,5 +125,5 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
 - https://github.com/dusty-nv/ros_deep_learning
 - https://github.com/dusty-nv/jetson-voice
 - https://github.com/dusty-nv/jetson-voice/tree/master/ros/jetson_voice_ros
-- https://github.com/Jen-Hung-Ho/jetbot_voice
+- https://github.com/Jen-Hung-Ho/ros2_jetbot_voice
 - https://automaticaddison.com/the-ultimate-guide-to-the-ros-2-navigation-stack/
