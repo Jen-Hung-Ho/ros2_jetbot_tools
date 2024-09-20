@@ -94,7 +94,7 @@ class NodeParamTools():
             return False
 
     #
-    # To set a parameter on another node in ROS2 using Python, use the GetParameters service.
+    # To get a parameter on another node in ROS2 using Python, use the GetParameters service.
     # client = node.create_client(GetParameters, f'{node_name}/get_parameters')
     #
     def get_node_parameters(self, node_name, param):

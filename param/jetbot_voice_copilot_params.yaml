@@ -1,0 +1,39 @@
+Jetbot_tool_voice_copilot:
+  ros__parameters:
+    ASR_topic: "/jetbot_voice/transcripts"
+    TTS_topic: "/chatbot/response"
+    ASR_node: "/Riva_ASR_processor"
+    start: true
+    TTS_enable: false
+    command_nodes: ["/laser_avoidance","/detect_copilot", "/follow_copilot"]
+    laser_topic: "/scan"
+    cmd_vel_topic: "/cmd_vel"
+    global_ns: false
+    base_frame: "base_footprint"
+    # jetbot_commands: syntax: ['command keyword', 'command name : distance/angle']
+    # command_keyword - Jetbot_ASR_client:jetbot_commands:[index:command_keyword]
+    # jetbot_commands: example: ['forward','move:0.5']
+    jetbot_commands: >
+      [
+        ['forward','move:0.5'], ['backward','move:-0.5'],
+        ['left','turn:90'], ['right','turn:-90'],
+        ['stop', 'stop:0']
+      ]
+    # jetbot_tasks: syntax: [task keyword, 'command_nodes index, parameter name']
+    # jetbot_tasks: ["follow", "2:follow_detect"]
+    jetbot_tasks: >
+      [
+        ['follow', '2:follow_detect'], ['self-driving', '0:start']
+      ]
+    angle: 30
+    angular_tolerance: 3.0
+    linear_tolerance: 0.05
+    #  Jetson DNN inference ROS2 detectnet node
+    node_name: "/detectnet/detectnet"
+    class_labels: "class_labels_3185375291238328062"
+    overlay_topic: "/detectnet/overlay"
+    detect_topic: "/detectnet/detections"
+    fov: 90.0
+    score: 0.5
+    tracking_objects: ['person']
+    detect_timeout: 12

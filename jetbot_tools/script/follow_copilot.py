@@ -257,7 +257,7 @@ class FollowDetectCopilot(Node):
     # detectnet node detections subscription call_back
     #
     def detection_callback(self, msg):
-        # self.get_logger().info('detection {}'.format(detections))
+        # self.get_logger().info('detection {}'.format(msg.detections))
         
         # get class label if label list is empty
         if len(self.class_label_names) == 0:
@@ -276,9 +276,18 @@ class FollowDetectCopilot(Node):
             # Use bbox -- > area
             area = detection.bbox.size_x * detection.bbox.size_y
             for result in detection.results:
-                # id: "\x02"  
-                id = ord(result.id)
-                score = result.score
+                # self.get_logger().info('result[{}] {}'.format(i, result))
+                # Get detection id/class_id , score
+                if hasattr(result, 'hypothesis') and hasattr(result.hypothesis, 'class_id'):
+                    # ROS2 Humble
+                    # class_id: "\x02"  
+                    id = ord(result.hypothesis.class_id)
+                    score = result.hypothesis.score
+                else:
+                    # ROS2 Foxy
+                    id = ord(result.id)
+                    score = result.score
+
                 label = self.GetClassDesc(id)
                 # self.get_logger().info('Result:[{}] id:[{}]=[{}] score:[{}]'.format(i, id, label, score))
                 if label in self.tracking_objects and score > self.score:
@@ -340,7 +349,12 @@ class FollowDetectCopilot(Node):
             # Calculate the angle between the camera and the object measured from the front of the object
             with self.mutex:
                 # Calculate the angle between the camera center and detec object
-                delta_x = detection.bbox.center.x - self.center_x
+                if hasattr(detection.bbox.center, 'position'):
+                    # ROS2 Humble
+                    delta_x = detection.bbox.center.position.x - self.center_x
+                else:
+                    # ROS2 Foxy
+                    delta_x = detection.bbox.center.x - self.center_x
                 probe_angle = -1.0 * (delta_x / self.center_x) * (self.FoV / 2.0)
             
             probe_distance = self.lidarlib.get_distance_from_lidar_data(probe_angle, tolerance=10.0)

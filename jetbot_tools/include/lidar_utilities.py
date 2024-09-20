@@ -109,7 +109,7 @@ class LidarTools():
             self.logger.debug('{}'.format(t.transform.rotation))
         except TransformException as ex:
             # self.logger.info('TF2 transform exception')
-            self.logger.info(f'TF2 transform exception {self.base_frame} to {self.odam_frame}: {ex}')
+            self.logger.info(f'TF2 transform exception {base_frame} to {odom_frame}: {ex}')
             return 0.0
 
         # Convert the rotation from a quaternion to an Euler angle
@@ -220,9 +220,32 @@ class LidarTools():
             with np.printoptions(precision=3, suppress=True):
                 self.logger.info('sample min-max:[{}]-[{}] max-row:{} raw-data:{}'.format(min_angle, max_angle, max_row, filter_180))
 
+        return max_row
+
+    #
+    # Find out the max distacne between min to max angle range pair
+    # angle_ranges = [(-180, -150), (120, 150)]
+    #
+    def max_lidar_distance_2(self, lidar_samples, angle_ranges, debug=False):
+        # Initialize an empty array to store filtered samples
+        filtered_samples = np.empty((0, 2))
+        
+        # Filter lidar samples for each specified angle range
+        for min_angle, max_angle in angle_ranges:
+            filtered_samples = np.vstack((filtered_samples, lidar_samples[(lidar_samples[:, 1] >= min_angle) & (lidar_samples[:, 1] <= max_angle)]))
+        
+        # Find the index of the maximum element in the first column
+        max_index = np.argmax(filtered_samples[:, 0])
+        # Return the whole row values
+        max_row = filtered_samples[max_index, :]
+
+        if debug:
+            with np.printoptions(precision=3, suppress=True):
+                self.logger.info('angle_ranges:{} max-row:{} raw-data:{}'.format(angle_ranges, max_row, filtered_samples))
 
         return max_row
-    
+
+
     #
     # get lidar samples in numpy array
     #
@@ -232,6 +255,14 @@ class LidarTools():
             lidar_samples = np.array(self.sonar_samples)
 
         return lidar_samples
+    
+    #
+    # dump lidar samples in numpy array
+    #
+    def print_lidar_samples(self):
+        for sample in self.sonar_samples:
+            formatted_sample = ["{:.2f}".format(value) for value in sample]
+            self.logger.info('lidar_data:{}'.format(formatted_sample))
 
     #
     # get lidar raw data
@@ -252,6 +283,19 @@ class LidarTools():
 
         # Assume the min to max range from -180 to 180
         index = int(array_length[0]/2)
+        (distance, angle) = lidar_samples[index]
+
+        return distance, angle, index
+
+    #
+    # Find out front distance with index - S2
+    #
+    def front_lidar_distance_index(self, lidar_samples, index=0):
+        # Find the front obstacle distance
+        array_length = lidar_samples.shape
+
+        # Assume the min to max range from -180 to 180
+        # Lidar front is -180, + 180
         (distance, angle) = lidar_samples[index]
 
         return distance, angle, index
@@ -297,4 +341,3 @@ class LidarTools():
         min_value = self.get_sonar_data_distance(kmeans, angle, k_sonar_samples, lidar_raw_data.range_max)
         
         return min_value
-        
