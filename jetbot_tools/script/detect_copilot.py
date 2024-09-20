@@ -180,7 +180,7 @@ class DetectCopilot(Node):
     # detectnet node detections subscription call_back
     #
     def detection_callback(self, msg):
-        # self.get_logger().info('detection {}'.format(detections))
+        # self.get_logger().info('detection {}'.format(msg.detections))
         
         # get class label if label list is empty
         if len(self.class_label_names) == 0:
@@ -195,9 +195,18 @@ class DetectCopilot(Node):
             # Use bbox -- > area
             area = detection.bbox.size_x * detection.bbox.size_y
             for result in detection.results:
-                # id: "\x02"  
-                id = ord(result.id)
-                score = result.score
+                # self.get_logger().info('result[{}] {}'.format(i, result))
+                # Get detection id/class_id , score
+                if hasattr(result, 'hypothesis') and hasattr(result.hypothesis, 'class_id'):
+                    # ROS2 Humble
+                    # class_id: "\x02"  
+                    id = ord(result.hypothesis.class_id)
+                    score = result.hypothesis.score
+                else:
+                    # ROS2 Foxy
+                    id = ord(result.id)
+                    score = result.score
+                
                 label = self.GetClassDesc(id)
                 # self.get_logger().info('Result:[{}] id:[{}]=[{}] score:[{}]'.format(i, id, label, score))
                 if label in self.tracking_objects and score > self.score:
@@ -245,7 +254,7 @@ class DetectCopilot(Node):
     # Post Twist command to move robot follow the detection object
     #
     def detect_and_follow(self, detection):
-        # self.get_logger().info('detect and follow:()'.format('hoj'))
+        # self.get_logger().info('detect and follow:() detection:{}'.format(detection))
 
         # 1) calculate detection area size
         area = detection.bbox.size_x * detection.bbox.size_y
@@ -253,9 +262,18 @@ class DetectCopilot(Node):
         self.twist.linear.x = 0.0
         self.twist.angular.z = turn
 
+        if hasattr(detection.bbox.center, 'position'):
+            # ROS2 Humble
+            c_x = detection.bbox.center.position.x
+            c_y = detection.bbox.center.position.y
+        else:
+            # ROS2 Foxy
+            c_x = detection.bbox.center.x
+            c_y = detection.bbox.center.y
+
         # 2) deltime rotate angle
         with self.mutex:
-            delta_x = detection.bbox.center.x - self.center_x
+            delta_x = c_x - self.center_x
             turn = -1.0 * (delta_x / self.center_x)
         
         # delta_x = detection.bbox.center.x - self.center_x
@@ -264,8 +282,8 @@ class DetectCopilot(Node):
 
         s_x = detection.bbox.size_x
         s_y = detection.bbox.size_y
-        x = detection.bbox.center.x
-        y = detection.bbox.center.y
+        x = c_x
+        y = c_y
         self.get_logger().info('detect area:{:.1f} - turn:{:.1f}  center:[x:{:.1f} y:{:.1f}] size: [s_x:{:.1f} s_y:{:.1f}] '.format(area, turn, x, y, s_x, s_y))
 
         if area < (self.stop_size / 1.0) and abs(turn) > 0.02:

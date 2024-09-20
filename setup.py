@@ -36,7 +36,10 @@ setup(
         'laser_avoidance = jetbot_tools.script.laser_avoidance:main',
         'tf2_follow = jetbot_tools.script.tf2_listener_copilot:main',
         'calibrate_angular = jetbot_tools.script.calibrate_angular:main',
-        'calibrate_linear = jetbot_tools.script.calibrate_linear:main'
+        'calibrate_linear = jetbot_tools.script.calibrate_linear:main',
+        'voice_copilot = jetbot_tools.script.jetbot_tools_copilot:main',
+        'llm_chat_agent = jetbot_tools.script.llm_chat_agent:main',
+        'llm_vision_agent = jetbot_tools.script.llm_vision_agent:main'
         ],
     },
 )

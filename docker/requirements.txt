@@ -1,0 +1,3 @@
+packaging>=20.0
+# PyKDL==1.4.0
+termcolor

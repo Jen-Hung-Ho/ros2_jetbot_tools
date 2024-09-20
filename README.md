@@ -1,14 +1,20 @@
-# Jetbot Tools with Jetson Inference DNN Vision Library for NAV2 ROS2 Robot
-Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision library for NVIDIA Jetson. With Jetbot tools, you can build your own low-cost 2-wheel robot with a camera and a lidar sensor and make it do the following amazing things:
+# Jetbot Tools with Jetson Inference DNN Vision Library and NanoLLM Container for NAV2 ROS2 Robot - Version 2.0
 
-- Lidar-assisted object avoidance self-driving: Your robot can navigate autonomously and avoid obstacles using the lidar sensor.
-- Real-time object detection and tracking: Your robot can detect objects using the SSD Mobilenet V2 model. You can also make your robot follow a specific object that it detects.
-- Real-time object detection and distance measurement: Your robot can detect and measure the distance of objects using the SSD Mobilenet V2 model and the lidar sensor. You can also make your robot follow a specific object that it detects and stop when it is too close to the object.
-- NAV2 TF2 position tracking and following: Your robot can track its own position and follow another Jetbot robot using the NAV2 TF2 framework.
-- Empower your robot with voice control: Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-to-Action Tools](https://github.com/Jen-Hung-Ho/ros2_jetbot_voice).
+Jetbot Tools is a collection of ROS2 nodes that leverage the Jetson Inference DNN Vision Library and the Jetson NanoLLM Docker container for NVIDIA Jetson. With Jetbot Tools, you can build a cost-effective, two-wheel robot equipped with a camera and a lidar sensor, enabling it to perform the following impressive tasks:
+
+- **Large Language Model (LLM) Chat**: Empower your Jetbot to respond using LLM chat. By default, it utilizes the [`meta-llama/Llama-2-7b-chat-hf`](https://huggingface.co/meta-llama/Llama-2-7b-chat-hf) model hosted in a ROS2 node.
+- **Vision-Language Model (VLM) Robot Camera Image Description**: Enable your Jetbot to describe images captured by its camera. By default, it employs the [`Efficient-Large-Model/VILA1.5-3b`](https://huggingface.co/Efficient-Large-Model/VILA1.5-3b) model hosted in a ROS2 node.
+- **Lidar-Assisted Object Avoidance Self-Driving**: Enable your robot to navigate autonomously and avoid obstacles using the lidar sensor.
+- **Real-Time Object Detection and Tracking**: Allow your robot to detect objects using the SSD Mobilenet V2 model. You can also make your robot follow a specific object that it detects.
+- **Real-Time Object Detection and Distance Measurement**: Enable your robot to detect and measure the distance of objects using the SSD Mobilenet V2 model and the lidar sensor. You can also make your robot follow a specific object and stop when it is too close.
+- **NAV2 TF2 Position Tracking and Following**: Allow your robot to track its own position and follow another Jetbot robot using the NAV2 TF2 framework.
+- **Voice-Activated Copilot**: Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-Activated Copilot Tools](https://github.com/Jen-Hung-Ho/ros2_jetbot_voice).
 
 #### Here is a brief overview of the jetbot tools design diagram/architecture
-<img src="docs/JetBot_tool_design_2.png" width="700" />
+<img src="docs/JetBot_ASR_voice_tool.png" width="700" />
+
+### Setup
+  - [Jetbot Tools Setup Guide](docs/setup.md#setup)
 
 ### Jetbot tools source code and video demos:
 ---
@@ -84,34 +90,47 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
     - ros2 launch jetbot_tools tf2_follow_copilot.launch.py param_file:=./jetbot_tools/param/tf2_follow_copilot_params.yaml
     - ros2 param set /tf2_follow start_follow true <br>
     <img src="docs/TF2_04.png" width="300"/> [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
-- **Empower your robot with voice control:**
-  - Unleash the power of voice control for your ROS2 robot with [Jetbot Voice-to-Action Tools!](https://github.com/Jen-Hung-Ho/jetbot_voice).
-  - The Jetbot Voice-to-Action tools integrates the [Jetson Automatic Speech Recognition (ASR) library](https://github.com/dusty-nv/jetson-voice), empowering your robot to understand and respond to spoken commands. Enhance interactions with features like natural chat greetings, object avoidance self-driving, and real-time person following, and basic robot navigation movement. <br>
-  [<img src="https://img.youtube.com/vi/SynIj1pxzdQ/hqdefault.jpg" width="300" height="200"
-/>](https://youtu.be/SynIj1pxzdQ)
+- **Empower your robot with Voice-Activated Copilot Tool:**
+  - Unleash the power of voice control for your ROS2 robot with the [Jetbot Voice-Activated Copilot Tool!](https://github.com/Jen-Hung-Ho/ros2_jetbot_voice)
+  - The Jetbot Voice-Activated Copilot Tool integrates the [Nvidia RIVA (ASR-TTS) service](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/overview.html) and a simple 1D convolutional neural network (CNN) model for text classification, empowering your robot to understand and respond to spoken commands. Enhance interactions with features such as natural chat greetings, conversational capabilities via Large Language Models (LLM), Visual Language Models (VLM) for vision processing, object avoidance, autonomous self-driving, real-time person following, and fundamental robot navigation movements. <br>
+  - Source code:
+    - [ROS2 node: llm_chat_agent.py](jetbot_tools/script/llm_chat_agent.py)
+    - [ROS2 node: llm_vision_agent.py](jetbot_tools/script/llm_vision_agent.py)
+    - [param file: jetbot_voice_copilot_params.yaml](param/jetbot_voice_copilot_params.yaml)
+    - [launch file: jetbot_tools_voice.launch.py](launch/jetbot_tools_voice.launch.py)
+    - [ROS2 node: jetbot_tools_copilot.py](jetbot_tools/script/jetbot_tools_copilot.py)
+  - Usage:
+    - ros2 run jetbot_tools llm_chat_agent
+    - ros2 run jetbot_tools llm_vision_agent
+    - ros2 launch jetbot_tools jetbot_tools_voice.launch.py param_file:=./jetbot_tools/param/jetbot_voice_copilot_params.yaml
+  [<img src="https://img.youtube.com/vi/SqDqO-KfWUs/hqdefault.jpg" width="300" height="200"
+/>](https://youtu.be/SqDqO-KfWUs)
     
 ### Requirements:
-- Jetson Nano:
-  - Ububnu 20.04: https://qengineering.eu/install-ubuntu-20.04-on-jetson-nano.html
-  - ROS2 foxy: https://docs.ros.org/en/foxy/index.html
-  - Jetson inference and realtime vision DNN library: https://github.com/dusty-nv/jetson-inference
-  - Jetson Inference Nodes for ROS2: https://github.com/dusty-nv/ros_deep_learning <br>
-    <img src="docs/Ubuntu_20_04_JTOP.jpg" width="500" />
+- Jetson Orin Nano or Jetson Orin NX:
+  - https://developer.nvidia.com/embedded/learn/get-started-jetson-agx-orin-devkit#what-youll-need
+  - ROS2 humble: https://docs.ros.org/en/humble/index.html
+  - NanoLLM docker container: https://github.com/dusty-nv/NanoLLM
+  - NanoLLM docker container for ROS2: https://github.com/NVIDIA-AI-IOT/ros2_nanollm <br>
+    <img src="docs/Ubuntu_22_04_JTOP.png" width="500" />
 - Host Virtual Machine:
-  - Ubuntu 20.04 LTS (Focal Fossa):https://www.releases.ubuntu.com/focal/ 
-  - ROS2 foxy: https://docs.ros.org/en/foxy/index.html
-  - NAV2 : https://navigation.ros.org/ <br>
+  - Ubuntu 22.04.5 LTS (Jammy Jellyfish):https://releases.ubuntu.com/jammy/ 
+  - ROS2 humble: https://docs.ros.org/en/humble/index.html
+  - NAV2 : https://wiki.ros.org/navigation <br>
     <p float="left">
       <img src="docs/JetBot_NAV2_2023-04-21.png" width="330" />
       <img src="docs/JetBot_DetectNet_toys.png" width="290" />
     </p>
 - Robot:
+  - Jetson Orin Jetbot: http://www.yahboom.net/study/ROSMASTER-X3
+    - [ROSMASTER_X3_Code](https://drive.google.com/drive/folders/1QuXJcrRMs8oyTrrROKMnUNvTHImcIC78)
   - Jetson Nano Jetbot: https://www.waveshare.com/wiki/JetBot_ROS_AI_Kit
     - https://github.com/waveshare/jetbot_pro  
   - GoPiGo3: https://www.dexterindustries.com/gopigo3/
     - https://github.com/ros-gopigo3/gopigo3
     - https://github.com/slowrunner/ROS2-GoPiGo3
     <p float="left">
+      <img src="docs/JetBot_2.jpg" width="200" height="200"/>
       <img src="docs/JetBot_1.jpg" width="200" height="200"/>
       <img src="docs/GoPiGo3_1.jpg" width="200" height="200"/>
     </p>
@@ -119,11 +138,14 @@ Jetbot tools is a set of ROS2 nodes that utilize the Jetson inference DNN vision
     
 ### References
 - https://qengineering.eu/install-ubuntu-20.04-on-jetson-nano.html
-- https://docs.ros.org/en/foxy/index.html
+- https://developer.nvidia.com/embedded/learn/get-started-jetson-agx-orin-devkit#what-youll-need
+- https://docs.ros.org/en/humble/index.html
 - https://navigation.ros.org/
-- https://github.com/dusty-nv/jetson-inference
-- https://github.com/dusty-nv/ros_deep_learning
-- https://github.com/dusty-nv/jetson-voice
-- https://github.com/dusty-nv/jetson-voice/tree/master/ros/jetson_voice_ros
+- https://github.com/dusty-nv/NanoLLM
+  - https://github.com/dusty-nv/jetson-inference
+  - https://github.com/dusty-nv/ros_deep_learning
+  - https://github.com/dusty-nv/jetson-voice
+  - https://github.com/dusty-nv/jetson-voice/tree/master/ros/jetson_voice_ros
+- https://www.jetson-ai-lab.com/tutorial_llamaspeak.html
 - https://github.com/Jen-Hung-Ho/ros2_jetbot_voice
 - https://automaticaddison.com/the-ultimate-guide-to-the-ros-2-navigation-stack/

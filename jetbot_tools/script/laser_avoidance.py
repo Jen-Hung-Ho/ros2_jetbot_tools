@@ -74,6 +74,7 @@ class LaserCopilot(Node):
         self.QosReliability = self.declare_parameter('qos_reliability', False).get_parameter_value().bool_value
         self.laser_topic = self.declare_parameter('laser_topic', '/scan').get_parameter_value().string_value
         self.stop_distance = self.declare_parameter('stop_distance', 0.5).get_parameter_value().double_value
+        self.front_zone_index = self.declare_parameter('front', 0).get_parameter_value().integer_value
         self.Angle = self.declare_parameter('angle', 30).get_parameter_value().integer_value
         self.fine_tune = self.declare_parameter('fine_tune', True).get_parameter_value().bool_value
         self.linear = self.declare_parameter('linear', 0.1).get_parameter_value().double_value
@@ -92,6 +93,7 @@ class LaserCopilot(Node):
         self.get_logger().info('cmd_vel_topic : {}'.format(self.cmd_vel_topic))
         self.get_logger().info('laser_topic   : {}'.format(self.laser_topic))
         self.get_logger().info('stop distance : {}'.format(self.stop_distance))
+        self.get_logger().info('front index   : {}'.format(self.front_zone_index))
         self.get_logger().info('angle         : {}'.format(self.Angle))
         self.get_logger().info('fine_tune     : {}'.format(self.fine_tune))
         self.get_logger().info('linear        : {}'.format(self.linear))
@@ -171,7 +173,7 @@ class LaserCopilot(Node):
             if self.last_move < 2:
                 # Stop the robot
                 self.pub_twist.publish(Twist())
-                self.get_logger().debug('Stop the robot')
+                self.get_logger().info('Stop the robot')
                 self.rotate = False
                 # debunce
                 self.last_move += 1
@@ -186,12 +188,14 @@ class LaserCopilot(Node):
             lidar_samples = self.lidarlib.get_lidar_samples()
 
             # Find the front obstacle distance
-            (distance, angle, index) = self.lidarlib.front_lidar_distance(lidar_samples)
-            
+            (distance, angle, index) = self.lidarlib.front_lidar_distance_index(lidar_samples, index=self.front_zone_index)
+
             if distance < self.stop_distance + 1.2:
                 # str_lidar_info = '%.2f:%.2f' %(distance, angle)
                 self.get_logger().info('Front:[d:a]:{:.2f}:{:.2f}'.format(distance, angle))
                 self.get_logger().debug('lidar_data:{}'.format(lidar_samples))
+                # self.lidarlib.print_lidar_samples()
+
 
             # fine_tune = False
             fine_tune_closeup_area = 1
@@ -201,21 +205,24 @@ class LaserCopilot(Node):
             a_angle = [0]*3
 
             # Detect obstacle in close up area
+            # S2 lidar front angle from -180 to +180
             if self.fine_tune and fine_tune_closeup_area == 1:
                 a_distance[1] = distance
                 a_angle[1] = angle
-                (a_distance[0], a_angle[0]) = lidar_samples[index-1]
-                (a_distance[2], a_angle[2]) = lidar_samples[index+1]
+                size = len(lidar_samples)
+                # Find out lidar font zone left and right index
+                (a_distance[0], a_angle[0]) = lidar_samples[(index-1+size) % size]
+                (a_distance[2], a_angle[2]) = lidar_samples[(index+1+size) % size]
 
 
                 if ((a_distance[0] <= a_distance[2]) and (a_distance[0] <= (self.stop_distance + 0.05))):
                     # right
-                    fine_tune_angle = 0.15
+                    fine_tune_angle = -0.15
                     fine_tune_closeup_area = 2
                     str_lidar_info = 'Closeup area -> RIGHT -- [d:a]:%.2f:%.2f' %(a_distance[0], a_angle[0])
                 elif ((a_distance[2] <= a_distance[0]) and (a_distance[2] <= (self.stop_distance + 0.05))):
                     # left
-                    fine_tune_angle = -0.15
+                    fine_tune_angle = +0.15
                     fine_tune_closeup_area = 2
                     str_lidar_info = 'Closeup area -> LEFT -- [d:a]:%.2f:%.2f' %(a_distance[2], a_angle[2])
 
@@ -227,18 +234,22 @@ class LaserCopilot(Node):
 
             # Detect obstacle in open area
             if self.fine_tune:
-                (probe_distance, probe_angle) = self.lidarlib.max_lidar_distance(lidar_samples, -70.0, 70.0, debug=False)
+                # (probe_distance, probe_angle) = self.lidarlib.max_lidar_distance(lidar_samples, -70.0, 70.0, debug=False)
+                # angle_ranges = [(-180, -150), (120, 150)]
+                angle_ranges = [(a_angle[0]-1.0-self.Angle, a_angle[0]+1.0), (a_angle[2]-1.0 - self.Angle, a_angle[2]+1.0)]
+                self.get_logger().info('---- angle ranges zone: {}'.format(angle_ranges))
+                (probe_distance, probe_angle) = self.lidarlib.max_lidar_distance_2(lidar_samples, angle_ranges, debug=False)
                 str_lidar_info = '%.2f:%.2f' %(probe_distance, probe_angle)
-                self.get_logger().debug('Fine tune: [d:a]:{}'.format(str_lidar_info))
+                self.get_logger().info('Fine tune: [d:a]:{}'.format(str_lidar_info))
                 if probe_distance > (distance + 0.1):
                     if fine_tune_closeup_area == 1:
                         # open area speed up
                         fine_tune_speed = 0.05
                     # turn base on probe angle
                     if probe_angle < angle:
-                        fine_tune_angle += -0.15
-                    else: 
                         fine_tune_angle += 0.15
+                    else: 
+                        fine_tune_angle += -0.15
     
 
             # debug output
@@ -352,6 +363,9 @@ class LaserCopilot(Node):
                     if abs(distance - float(self.turn_status.distance)) < 0.05:
                         self.get_logger().info("Rotate to expect distance:{} vs current: [d:a]:{}:{}".format(str(self.turn_status.distance), distance, angle))    
                         break
+                    elif self.rotate == False:
+                        self.get_logger().info("============== Rotate --> CANCEL ==============\n")
+                        break
 
                 # Stop the robot
                 self.pub_twist.publish(Twist())
@@ -360,7 +374,7 @@ class LaserCopilot(Node):
                 self.turn_status = self.turn_status._replace(done=True)
                 self.get_logger().info("============== Rotate --> END ==============\n")
             else:
-                if self.rotate == True:
+                if self.rotate == True or self.turn_status.done == False:
                     self.get_logger().info("Turn status:{}".format(self.turn_status))
                     self.get_logger().info("============== Rotate --> CANCEL ==============\n")
                 self.rotate = False
