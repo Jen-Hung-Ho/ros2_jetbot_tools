@@ -18,6 +18,21 @@ Jetbot Tools is a collection of ROS2 nodes that leverage the Jetson Inference DN
 
 ### Jetbot tools source code and video demos:
 ---
+- **Empower your robot with Voice-Activated Copilot Tool:**
+  - Unleash the power of voice control for your ROS2 robot with the [Jetbot Voice-Activated Copilot Tool!](https://github.com/Jen-Hung-Ho/ros2_jetbot_voice)
+  - The Jetbot Voice-Activated Copilot Tool integrates the [Nvidia RIVA (ASR-TTS) service](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/overview.html) and a simple 1D convolutional neural network (CNN) model for text classification, empowering your robot to understand and respond to spoken commands. Enhance interactions with features such as natural chat greetings, conversational capabilities via Large Language Models (LLM), Visual Language Models (VLM) for vision processing, object avoidance, autonomous self-driving, real-time person following, and fundamental robot navigation movements. <br>
+  - Source code:
+    - [ROS2 node: llm_chat_agent.py](jetbot_tools/script/llm_chat_agent.py)
+    - [ROS2 node: llm_vision_agent.py](jetbot_tools/script/llm_vision_agent.py)
+    - [param file: jetbot_voice_copilot_params.yaml](param/jetbot_voice_copilot_params.yaml)
+    - [launch file: jetbot_tools_voice.launch.py](launch/jetbot_tools_voice.launch.py)
+    - [ROS2 node: jetbot_tools_copilot.py](jetbot_tools/script/jetbot_tools_copilot.py)
+  - Usage:
+    - ros2 run jetbot_tools llm_chat_agent
+    - ros2 run jetbot_tools llm_vision_agent
+    - ros2 launch jetbot_tools jetbot_tools_voice.launch.py param_file:=./jetbot_tools/param/jetbot_voice_copilot_params.yaml
+  [<img src="https://img.youtube.com/vi/SqDqO-KfWUs/hqdefault.jpg" width="300" height="200"
+/>](https://youtu.be/SqDqO-KfWUs)
 - **Lidar-assisted object avoidance self-driving:**
   - Code logic explanation:
     - Use the LIDAR sensor to collect data from all directions and divide it into 12 segments of 30 degrees each
@@ -90,21 +105,6 @@ Jetbot Tools is a collection of ROS2 nodes that leverage the Jetson Inference DN
     - ros2 launch jetbot_tools tf2_follow_copilot.launch.py param_file:=./jetbot_tools/param/tf2_follow_copilot_params.yaml
     - ros2 param set /tf2_follow start_follow true <br>
     <img src="docs/TF2_04.png" width="300"/> [<img src="https://img.youtube.com/vi/jliHl-B6Ivo/hqdefault.jpg" width="300" height="200"/>](https://www.youtube.com/shorts/jliHl-B6Ivo)
-- **Empower your robot with Voice-Activated Copilot Tool:**
-  - Unleash the power of voice control for your ROS2 robot with the [Jetbot Voice-Activated Copilot Tool!](https://github.com/Jen-Hung-Ho/ros2_jetbot_voice)
-  - The Jetbot Voice-Activated Copilot Tool integrates the [Nvidia RIVA (ASR-TTS) service](https://docs.nvidia.com/deeplearning/riva/user-guide/docs/overview.html) and a simple 1D convolutional neural network (CNN) model for text classification, empowering your robot to understand and respond to spoken commands. Enhance interactions with features such as natural chat greetings, conversational capabilities via Large Language Models (LLM), Visual Language Models (VLM) for vision processing, object avoidance, autonomous self-driving, real-time person following, and fundamental robot navigation movements. <br>
-  - Source code:
-    - [ROS2 node: llm_chat_agent.py](jetbot_tools/script/llm_chat_agent.py)
-    - [ROS2 node: llm_vision_agent.py](jetbot_tools/script/llm_vision_agent.py)
-    - [param file: jetbot_voice_copilot_params.yaml](param/jetbot_voice_copilot_params.yaml)
-    - [launch file: jetbot_tools_voice.launch.py](launch/jetbot_tools_voice.launch.py)
-    - [ROS2 node: jetbot_tools_copilot.py](jetbot_tools/script/jetbot_tools_copilot.py)
-  - Usage:
-    - ros2 run jetbot_tools llm_chat_agent
-    - ros2 run jetbot_tools llm_vision_agent
-    - ros2 launch jetbot_tools jetbot_tools_voice.launch.py param_file:=./jetbot_tools/param/jetbot_voice_copilot_params.yaml
-  [<img src="https://img.youtube.com/vi/SqDqO-KfWUs/hqdefault.jpg" width="300" height="200"
-/>](https://youtu.be/SqDqO-KfWUs)
     
 ### Requirements:
 - Jetson Orin Nano or Jetson Orin NX:
