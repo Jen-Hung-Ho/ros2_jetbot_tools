@@ -9,13 +9,13 @@
 3. **Clone the Repository**:
    Open your terminal and run the following command to clone the repository:
    ```bash
-   https://github.com/Jen-Hung-Ho/ros2_jetbot_voice
+   https://github.com/Jen-Hung-Ho/ros2_jetbot_tools
    ```
 
 4. **Navigate to the Repository Directory**:
    Change to the directory of the cloned repository:
    ```bash
-   cd ros2_jetbot_voice/docker
+   cd ros2_jetbot_tools/docker
    ```
 
 5. **Build the Docker Image**:
