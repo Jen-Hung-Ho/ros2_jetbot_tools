@@ -12,7 +12,7 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
 
     param_file_cmd = DeclareLaunchArgument(
-        'param_file', default_value='./jetbot_tools/param/follow_copilot_params.yaml')
+        'param_file', default_value='./jetbot_tools/param/follow_copilot_params_v2.yaml')
 
     # Start the ROS2 node with Mobilenet-V2 detect pesron for the GoPiGo3/Jetbot two wheel bot.
     start_detect_copilot_node_cmd = Node(

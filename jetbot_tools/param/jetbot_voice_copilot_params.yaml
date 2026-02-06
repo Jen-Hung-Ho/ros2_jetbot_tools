@@ -1,11 +1,11 @@
 Jetbot_tool_voice_copilot:
   ros__parameters:
     ASR_topic: "/jetbot_voice/transcripts"
-    TTS_topic: "/chatbot/response"
+    TTS_topic: "/jetbot_TTS/transcripts"
+    chat_topic: "/chatbot/response"
     ASR_node: "/Riva_ASR_processor"
     start: true
-    TTS_enable: false
-    command_nodes: ["/laser_avoidance","/detect_copilot", "/follow_copilot"]
+    TTS_enable: true
     laser_topic: "/scan"
     cmd_vel_topic: "/cmd_vel"
     global_ns: false

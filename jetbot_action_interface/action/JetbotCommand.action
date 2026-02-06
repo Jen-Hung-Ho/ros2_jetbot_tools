@@ -1,0 +1,17 @@
+# Goal
+string command         # e.g. "turn", "move", "stop", "self-driving", "follow"
+float64 angle          # For 'turn' (degrees)
+float64 distance       # For 'move' (meters)
+float64 tolerance      # For action tolerance
+bool run               # For 'self-driving' or 'follow', start/stop the task
+
+---
+# Result
+bool success
+string message
+
+---
+# Feedback
+string status
+float64 progress       # 0.0 - 1.0
+

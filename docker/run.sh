@@ -20,11 +20,14 @@ ROOT=$(dirname "$0")
 DOCKER_VOLUMES="
 --volume=$VOLUME_X11 \
 --volume /tmp/argus_socket:/tmp/argus_socket \
---volume=$ROOT/../../jetbot_tools:/ros2_ws/src/jetbot_tools \
+--volume=$ROOT/../../jetbot_tools/jetbot_tools:/ros2_ws/src/jetbot_tools \
+--volume=$ROOT/../../jetbot_tools/jetbot_action_interface:/ros2_ws/src/jetbot_action_interface \
+--volume=$ROOT/../../jetbot_tools/jetbot_action_server:/ros2_ws/src/jetbot_action_server \
 --volume=$ROOT/../../jetbot_tools/data:/data \
 --volume=$ROOT/../../test:/ros2_ws/src/test \
+--volume=$ROOT/../../jetbot_tools/install:/ros2_ws/src/install \
+--volume=$ROOT/../../jetbot_tools/build:/ros2_ws/src/build \
 --volume=$VOLUME_ROS_LOG \
---volume=/ros2_ws:/ros2_ws \
 "
 
 
@@ -79,14 +82,26 @@ else
     SUDO="sudo"
 fi
 
+
+# CMD: Source ROS2 setup if it exists, else warn to run 'colcon build', then start bash
+# It checks if the ROS2 workspace setup file exists at install/setup.bash.
+# - If the file exists, it sources the setup.bash to set up the ROS2 environment.
+# - If the file does not exist, it prints a warning message reminding the user to run 'colcon build'
+#   inside the container to build the ROS2 packages and generate the setup.bash file.
+CMD='if [ -f install/setup.bash ]; then \
+    source install/setup.bash; \
+else \
+    echo "WARNING: install/setup.bash not found! Please run '\''colcon build'\'' inside the container to build your ROS2 packages."; \
+fi; /bin/bash'
+
 # Run the docker command
 # Check if the first input parameter is 'admin'
 if [ "$1" == "user" ]; then
     $SUDO docker run --runtime nvidia -it --user $USER_ID:$GROUP_ID --rm --net host --ipc host \
     ${DOCKER_ARGS} \
-    $DOCKER_IMAGE /bin/bash -c "source install/setup.bash && /bin/bash"
+    $DOCKER_IMAGE /bin/bash -c "$CMD"
 else
-    $SUDO docker run --runtime nvidia -it --rm --net host --ipc host\
+    $SUDO docker run --runtime nvidia -it --rm --net host --ipc host \
     ${DOCKER_ARGS} \
-    $DOCKER_IMAGE /bin/bash -c "source install/setup.bash && /bin/bash"
+    $DOCKER_IMAGE /bin/bash -c "$CMD"
 fi

@@ -55,6 +55,9 @@ ENV PYTHONPATH=/opt/NanoLLM:/opt/clip_trt:/opt/NanoDB:$PYTHONPATH
 RUN mkdir -p /ros2_ws/src
 WORKDIR /ros2_ws/src
 
+# *** FIX: Change ownership to the jetbot user ***
+RUN chown -R ${USERNAME}:${USERNAME} /ros2_ws
+
 # Set the default shell
 ENV SHELL=/bin/bash
 

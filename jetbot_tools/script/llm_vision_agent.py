@@ -22,7 +22,7 @@
 #
 # Reference
 # This code is inspired by the example from dusty-nv NanoLLM: 
-# https://github.com/dusty-nv/NanoLLM/blob/main/nano_llm/chat/example.py
+# https://github.com/dusty-nv/NanoLLM/blob/main/nano_llm/vision/example.py
 
 import cv2
 import rclpy
@@ -232,7 +232,7 @@ class llm_vision_description(Node):
         super().__init__('llm_vision_description')
 
         # Detect parameters
-        # meta-llama/Llama-2-7b-chat-hf  meta-llama/Meta-Llama-3-8B-Instruct
+        # Efficient-Large-Model/VILA1.5-3b
         self.llm_model = self.declare_parameter('model', 'Efficient-Large-Model/VILA1.5-3b').get_parameter_value().string_value
         self.quantization = self.declare_parameter('quantization', 'q4f16_ft').get_parameter_value().string_value
         self.max_context_len = self.declare_parameter('max-context-len', 256).get_parameter_value().integer_value
@@ -329,7 +329,12 @@ class llm_vision_description(Node):
 
             img = self.video_source.capture()
             if img is None:
-                self.get_logger().info('Video source failed to caputre ROS2 image')
+                response = "Failed to capture image from video source."
+                self.get_logger().info(response)
+                # Publish the response as a ROS2 message
+                response_msg = String()
+                response_msg.data = response
+                self.llm_publication.publish(response_msg)
                 return
             else:
                 self.chat_history.append('user', image=img)

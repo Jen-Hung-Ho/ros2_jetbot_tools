@@ -9,5 +9,5 @@ else
     # export ROS_DOMAIN_ID=7
     # source /opt/ros/install/setup.bash
     # source /ros2_workspace/install/setup.bash
-    docker exec -it $CONTAINER_ID /bin/bash -c "export ROS_DOMAIN_ID=7 && source /opt/ros/install/setup.bash && source /ros2_workspace/install/setup.bash && exec /bin/bash"
+    docker exec -it $CONTAINER_ID /bin/bash -c "export ROS_DOMAIN_ID=7 && source /opt/ros/install/setup.bash && source /ros2_workspace/install/setup.bash && source /ros2_ws/src/install/setup.bash && exec /bin/bash"
 fi
