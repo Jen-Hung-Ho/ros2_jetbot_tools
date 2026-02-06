@@ -19,6 +19,7 @@
     - ros2 launch jetbot_tools jetbot_tools_voice.launch.py 
     - ros2 run jetbot_tools llm_chat_agent
     - ros2 run jetbot_tools llm_vision_agent
-    - ros2 launch jetbot_tools jetbot_tools_voice.launch.py param_file:=./jetbot_tools/param/jetbot_voice_copilot_params.yaml
+    - ros2 launch jetbot_tools jetbot_tools_voice.launch.py param_file:=./jetbot_tools/param/jetbot_voice_copilot_params.yaml <br>
   [<img src="https://img.youtube.com/vi/SqDqO-KfWUs/hqdefault.jpg" width="300" height="200"
 />](https://youtu.be/SqDqO-KfWUs)
+
