@@ -1,0 +1,22 @@
+follow_copilot:
+  ros__parameters:
+    version: 2
+    laser_topic: "/scan"
+    cmd_vel_topic: "/cmd_vel"
+    node_name: "/yolo_detection_node"
+    overlay_topic: "/yolo/overlay"
+    detect_topic: "/yolo/detections"
+    class_labels: "class_labels"
+    overlay_scale_param: "overlay_scale_percent"
+    overlay_scale_percent: 100
+    speed: 0.1
+    speed_up: 0.07
+    turn: 0.6
+    stop_zone_buffer: 0.20
+    stop_distance: 0.50
+    fov: 90.0
+    score: 0.50
+    stop_count: 10
+    follow_detect: false
+    tracking_objects: ['person','dog']
+    debug: true

@@ -24,7 +24,7 @@
    ./build.sh
    ```
 
-6. **Start Docker in user mode and Build the jetbot tools ros2 package**:
+6. **Start Docker in user mode and Build all Jetbot Tools ROS2 packages**:
 
    Execute the following commands to run the Docker container under user mode and build the jetbot tools ROS2 packages:
 
@@ -32,12 +32,19 @@
    . run.sh user
    colcon build # Run this command only the first time after building the Docker image or when changes are made to the Jetbot tools ROS2 code.
    ```
-
+   
+   **Optional: Build only specific packages**: Useful when iterating on a single package:
+   ```bash
+   colcon build --packages-select jetbot_action_interface
+   colcon build --packages-select jetbot_action_server
+   colcon build --packages-select jetbot_tools
+   ```
+   
    **More Info**: Run nodes inside the container with the same user ID as ROS2 nodes on the host. For more details, you can refer to the following resources:
    - [ROS2 Template GitHub](https://github.com/rosblox/ros-template)
    - [Stack Overflow Discussion](https://stackoverflow.com/questions/65900201/troubles-communicating-with-ros2-node-in-docker-container)
    
-7. **Attach to an Existing Running Docker Container**:
+8. **Attach to an Existing Running Docker Container**:
    To attach to an existing running Docker container, use the following commands:
    ```bash
    docker ps 

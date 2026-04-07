@@ -1,0 +1,20 @@
+jetbot_command_action_server:
+  ros__parameters:
+    ASR_node: "/Riva_ASR_processor"
+    ASR_topic: "/jetbot_voice/transcripts"
+    chat_topic: "/chatbot/response"
+    TTS_topic: "/jetbot_TTS/transcripts"
+    command_nodes: ["/laser_avoidance","/detect_copilot", "/follow_copilot"]
+    laser_topic: "/scan"
+    cmd_vel_topic: "/cmd_vel"
+    global_ns: false
+    base_frame: "base_footprint"
+    # jetbot_tasks: syntax: [task keyword, 'command_nodes index, parameter name']
+    # jetbot_tasks: ["follow", "2:follow_detect"]
+    jetbot_tasks: >
+      [
+        ['follow', '2:follow_detect'], ['self-driving', '0:start']
+      ]
+    # jetbot move tolerance parameters
+    angular_tolerance: 3.0
+    linear_tolerance: 0.05

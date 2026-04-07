@@ -70,10 +70,27 @@ class NodeParamTools():
         pass
 
     #
+    # Quickly check if a ROS2 node exists by listing all nodes.
+    #
+    def node_exists(self, node_name):
+
+        node_names_and_namespaces = self.node.get_node_names_and_namespaces()
+        node_names = [f"{ns}/{name}".replace('//', '/') for name, ns in node_names_and_namespaces]
+        self.logger.debug(f"[node_exists] Available nodes: {node_names}")
+        exists = node_name in node_names
+        if exists:
+            self.logger.info(f"[node_exists] Node '{node_name}' exists.")
+        else:
+            self.logger.info(f"[node_exists] Node '{node_name}' does NOT exist.")
+        return exists
+
+    #
     # Try catch version of get_node_parameters
     #
     def try_get_node_parameters(self, node_name, param):
         try:
+            if not self.node_exists(node_name):
+                raise RuntimeError(f"Node '{node_name}' does not exist.")
             value = self.get_node_parameters(node_name, param)
             return (True, value)
         except RuntimeError as e:
@@ -86,6 +103,8 @@ class NodeParamTools():
     #
     def try_set_node_parameters(self, node_name, param_name, type, value):
         try:
+            if not self.node_exists(node_name):
+                raise RuntimeError(f"Node '{node_name}' does not exist.")
             self.set_node_parameters(node_name, param_name, type, value)
             return True
         except RuntimeError as e:
@@ -121,6 +140,9 @@ class NodeParamTools():
                 self.logger.info('get node string value: {}'.format(pvalue.string_value))
             elif pvalue.type == ParameterType.PARAMETER_STRING_ARRAY:
                 self.logger.info('get node string array value: {}'.format(pvalue.string_array_value))
+            elif pvalue.type == ParameterType.PARAMETER_INTEGER:
+                self.logger.info('get node integer value: {}'.format(pvalue.integer_value))
+
 
         return pvalue
     

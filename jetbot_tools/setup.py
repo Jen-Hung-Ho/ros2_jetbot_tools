@@ -21,7 +21,7 @@ setup(
         # Include all includ file
         (os.path.join('share', package_name, 'include'), glob('include/*.py')),
     ],
-    install_requires=['setuptools'],
+    install_requires=['setuptools', 'sensor_msgs_py'],
     zip_safe=True,
     maintainer='Jen-Hung Ho',
     maintainer_email='jetbot@todo.todo',
@@ -39,7 +39,10 @@ setup(
         'calibrate_linear = jetbot_tools.script.calibrate_linear:main',
         'voice_copilot = jetbot_tools.script.jetbot_tools_copilot:main',
         'llm_chat_agent = jetbot_tools.script.llm_chat_agent:main',
-        'llm_vision_agent = jetbot_tools.script.llm_vision_agent:main'
+        'llm_vision_agent = jetbot_tools.script.llm_vision_agent:main',
+        'pointcloud_avoidance = jetbot_tools.script.pointcloud_avoidance:main',
+        'depth_vision_avoidance = jetbot_tools.script.depth_vision_avoidance:main',
+        'compressed_image_republisher = jetbot_tools.script.compressed_image_republisher:main'
         ],
     },
 )

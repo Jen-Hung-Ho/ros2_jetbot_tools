@@ -1,0 +1,40 @@
+pointcloud_avoidance:
+  ros__parameters:
+    # Topic parameters
+    cmd_vel_topic: '/cmd_vel'
+    pointcloud_topic: '/camera/points_decompressed'
+    local_costmap_topic: '/local_costmap/costmap'
+    scan_topic: '/scan'
+
+    # QoS settings
+    qos_reliability: false
+
+    # Control parameters
+    start: false
+    stop_distance: 0.7
+    fov_deg: 60.0
+    height_filter: -0.1
+    speed: 0.1
+    speed_up: 0.03
+    twist_z: 0.06
+    version: 1
+
+    # Distance thresholds
+    min_valid_distance_lidar: 0.25
+    min_valid_distance_vision: 0.6
+    movement_threshold: 2.0
+
+    # Costmap parameters
+    flip_costmap_sectors: true
+    costmap_trigger_threshold: 45
+
+    # LIDAR sector parameters (for version 3)
+    lidar_min_measure_distance: 0.05
+    lidar_sector_left_min: -30.0
+    lidar_sector_left_max: -10.0
+    lidar_sector_center_min1: -10.0
+    lidar_sector_center_max1: -0.0
+    lidar_sector_center_min2: 0.0
+    lidar_sector_center_max2: 10.0
+    lidar_sector_right_min: 10.0
+    lidar_sector_right_max: 30.0
