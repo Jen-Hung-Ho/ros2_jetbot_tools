@@ -57,8 +57,9 @@
        - ros2 param get /pointcloud_avoidance start
 
        - ros2 param set /pointcloud_avoidance start true 
-   - Example RViz visualization:  (TODO:  Need ot update the youtube linked url)
+   - Example RViz visualization:
      <br>
-   <img src="/docs/rviz_voxel_grid_view.png" width="300"/> [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
+    [<img src="https://img.youtube.com/vi/2WhUFiI1UmU/hqdefault.jpg" width="300" height="200"
+/>](https://youtu.be/2WhUFiI1UmU) [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
 />](https://www.youtube.com/shorts/wy3AIB81d3M)
 

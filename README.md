@@ -44,8 +44,8 @@ Jetbot Tools is a collection of ROS2 nodes that integrate a YOLO‑based vision 
   - ROS2 humble: https://docs.ros.org/en/humble/index.html
   - NAV2 : https://wiki.ros.org/navigation <br>
     <p float="left">
-      <img src="docs/JetBot_NAV2_2023-04-21.png" width="330" />
-      <img src="docs/JetBot_DetectNet_toys.png" width="290" />
+      <img src="docs/JetBot_NAV2_2023-04-21.png" width="330" height="200" />
+      <img src="docs/rviz_voxel_grid_view.png" width="330" height="200"/>
     </p>
 - Robot:
   - Jetson Orin Jetbot: http://www.yahboom.net/study/ROSMASTER-X3
