@@ -59,7 +59,20 @@
        - ros2 param set /pointcloud_avoidance start true 
    - Example RViz visualization:
      <br>
-    [<img src="https://img.youtube.com/vi/2WhUFiI1UmU/hqdefault.jpg" width="300" height="200"
-/>](https://youtu.be/2WhUFiI1UmU) [<img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200"
-/>](https://www.youtube.com/shorts/wy3AIB81d3M)
+       <table>
+           <tr>
+             <td align="center">
+               <a href="https://youtu.be/2WhUFiI1UmU">
+                 <img src="https://img.youtube.com/vi/2WhUFiI1UmU/hqdefault.jpg" width="300" height="200">
+               </a>
+               <div><b>RViz STVL 3D Demo</b></div>
+             </td>
+             <td align="center">
+               <a href="https://www.youtube.com/shorts/wy3AIB81d3M">
+                 <img src="https://img.youtube.com/vi/wy3AIB81d3M/hqdefault.jpg" width="300" height="200">
+               </a>
+               <div><b>JetBot Movement Demo</b></div>
+             </td>
+           </tr>
+         </table>
 
