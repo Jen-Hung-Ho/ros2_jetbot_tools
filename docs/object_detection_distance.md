@@ -23,5 +23,19 @@
       - ros2 launch jetbot_tools follow_copilot.launch.py param_file:=./jetbot_tools/param/follow_copilot_params_v2.yaml
     - ros2 param get /follow_copilot follow_detect
     - ros2 param set /follow_copilot follow_detect true <br>
-  [<img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="300" height="200"
-/>](https://www.youtube.com/embed/tyB0vQvJUOY)
+  <table>
+  <tr>
+    <td align="center">
+      <a href="https://youtube.com/shorts/WHVgW2n2Q1s">
+        <img src="https://img.youtube.com/vi/WHVgW2n2Q1s/hqdefault.jpg" width="340">
+      </a>
+      <div><b>V2 Demo</b></div>
+    </td>
+    <td align="center">
+      <a href="https://www.youtube.com/embed/tyB0vQvJUOY">
+        <img src="https://img.youtube.com/vi/tyB0vQvJUOY/hqdefault.jpg" width="340">
+      </a>
+      <div><b>V1 Demo</b></div>
+    </td>
+  </tr>
+</table>
