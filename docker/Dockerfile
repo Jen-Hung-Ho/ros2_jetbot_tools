@@ -36,6 +36,33 @@ WORKDIR /test
 # Copy requirements.txt to the working directory
 COPY requirements.txt /test/requirements.txt
 
+# ---------------------------------------------------------------------------
+# WORKAROUND: Fix broken ROS2 apt repository in dustynv/nano_llm:humble-r36.3.0
+#
+# The base image contains a malformed /etc/apt/sources.list.d/ros2.list and an
+# expired ROS GPG key (F42ED6FBAB17C654). This causes all `apt-get update`
+# commands to fail with:
+#   "Malformed entry" or "EXPKEYSIG ... Open Robotics"
+#
+# This block removes the broken repo file, installs a fresh ROS keyring, and
+# recreates a valid ROS2 repository entry so apt can function normally.
+# ---------------------------------------------------------------------------
+
+# Remove the broken ROS2 repo file entirely
+RUN rm -f /etc/apt/sources.list.d/ros2.list
+
+# Install curl + gnupg
+RUN apt-get update && apt-get install -y curl gnupg2
+
+# Install the new ROS2 keyring (Docker-safe)
+RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
+    | gpg --batch --yes --dearmor -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+# Recreate the ROS2 repo with the new key
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] \
+    http://packages.ros.org/ros2/ubuntu jammy main" \
+    > /etc/apt/sources.list.d/ros2.list
+
 # Update the package list and install PyKDL
 RUN apt-get update && apt-get install -y \
     liborocos-kdl-dev \
