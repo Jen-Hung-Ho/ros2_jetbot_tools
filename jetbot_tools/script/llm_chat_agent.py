@@ -59,6 +59,7 @@ class llm_text_chat(Node):
         # meta-llama/Llama-2-7b-chat-hf  meta-llama/Meta-Llama-3-8B-Instruct
         self.llm_model = self.declare_parameter('model', 'meta-llama/Llama-2-7b-chat-hf').get_parameter_value().string_value
         self.quantization = self.declare_parameter('quantization', 'q4f16_ft').get_parameter_value().string_value
+        self.backend = self.declare_parameter('backend', 'pytorch').get_parameter_value().string_value
         self.max_tokens = self.declare_parameter('max-new-tokens', 256).get_parameter_value().integer_value
         self.llm_chat = self.declare_parameter('llm_chat', True).get_parameter_value().bool_value
         self.llm_input_topic = self.declare_parameter('llm_input', '/jetbot_llm_input').get_parameter_value().string_value
@@ -67,6 +68,7 @@ class llm_text_chat(Node):
         # Display settings informatio
         self.get_logger().info('model          : {}'.format(self.llm_model))
         self.get_logger().info('quantization   : {}'.format(self.quantization))
+        self.get_logger().info('backend        : {}'.format(self.backend))
         self.get_logger().info('max new tokens : {}'.format(self.max_tokens))
         self.get_logger().info('llm_chat start : {}'.format(self.llm_chat))
         self.get_logger().info('llm input topic :{}'.format(self.llm_input_topic))
@@ -117,7 +119,7 @@ class llm_text_chat(Node):
         self.model = NanoLLM.from_pretrained(
             model=self.llm_model, 
             quantization=self.quantization, 
-            api='mlc'
+            backend=self.backend
         )
 
         self.chat_history = ChatHistory(self.model, system_prompt="You are a helpful and friendly AI assistant.")
