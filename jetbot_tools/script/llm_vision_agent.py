@@ -235,6 +235,7 @@ class llm_vision_description(Node):
         # Efficient-Large-Model/VILA1.5-3b
         self.llm_model = self.declare_parameter('model', 'Efficient-Large-Model/VILA1.5-3b').get_parameter_value().string_value
         self.quantization = self.declare_parameter('quantization', 'q4f16_ft').get_parameter_value().string_value
+        self.backend = self.declare_parameter('backend', 'pytorch').get_parameter_value().string_value
         self.max_context_len = self.declare_parameter('max-context-len', 256).get_parameter_value().integer_value
         self.max_tokens = self.declare_parameter('max-new-tokens', 50).get_parameter_value().integer_value
         self.llm_chat = self.declare_parameter('llm_chat', True).get_parameter_value().bool_value
@@ -245,6 +246,7 @@ class llm_vision_description(Node):
         # Display settings informatio
         self.get_logger().info('model           : {}'.format(self.llm_model))
         self.get_logger().info('quantization    : {}'.format(self.quantization))
+        self.get_logger().info('backend         : {}'.format(self.backend))
         self.get_logger().info('max context len : {}'.format(self.max_context_len))
         self.get_logger().info('max new tokens  : {}'.format(self.max_tokens))
         self.get_logger().info('llm_chat start  : {}'.format(self.llm_chat))
@@ -305,7 +307,7 @@ class llm_vision_description(Node):
             model=self.llm_model, 
             quantization=self.quantization,
             max_context_len=self.max_context_len,
-            api='mlc',
+            backend=self.backend,
             vision_api='auto',
             vision_model= None,
             vision_scaling= None
